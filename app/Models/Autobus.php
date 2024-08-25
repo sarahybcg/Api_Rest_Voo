@@ -32,7 +32,7 @@ class Autobus extends Model
     {
         return $this->belongsTo(Condicion::class, 'idCondicion');
     }
- 
+       
     public function historialViajes()
     {
         return $this->hasMany(HistorialViaje::class, 'idAutobus');

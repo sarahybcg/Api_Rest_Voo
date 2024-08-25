@@ -14,8 +14,8 @@ class Prioridad extends Model
     protected $fillable=array("*");
 
  //hasMany para indicar que una prioridad puede estar asociada con varios notif.
-    public function notificacion()
-    {
-        return $this->hasMany(Notificacion::class, 'idNotificacion');  
-    }
+        public function notificacion()
+        {
+            return $this->hasMany(Notificacion::class, 'idPrioridad');
+        }
 }

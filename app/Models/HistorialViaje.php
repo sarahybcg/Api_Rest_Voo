@@ -7,17 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class HistorialViaje extends Model
 {
-    use HasFactory;
+    public $table= "historialViajes";
 
-    protected $fillable = [
-        'idTrayecto', 
-        'idAutobus', 
-        'idUsuario', 
-        'tiempo_inicio', 
-        'tiempo_fin', 
-        'duracion', 
-        'estado'
-    ];
+    protected $fillable =array("*");
 
     public function trayecto()
     {
@@ -33,4 +25,5 @@ class HistorialViaje extends Model
     {
         return $this->belongsTo(Usuario::class, 'idUsuario');
     }
+      
 }

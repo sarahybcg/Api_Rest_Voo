@@ -17,6 +17,11 @@ class Modelo extends Model
 
     public function marca()
     {
-        return $this->belongsTo(Marca::class);
+        return $this->belongsTo(Marca::class, 'idMarca');
+    }
+     
+    public function autobuses()
+    {
+        return $this->hasMany(Autobus::class, 'idModelo');
     }
 }

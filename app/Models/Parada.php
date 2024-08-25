@@ -13,8 +13,8 @@ class Parada extends Model
     
     protected $fillable=array("*");
     
-       public function trayecto()
-       {
-           return $this->belongsToMany(Trayecto::class, 'trayecto_paradas');  
-       }
+    public function trayectos()
+    {
+        return $this->belongsToMany(Trayecto::class, 'trayecto_paradas', 'parada_id', 'trayecto_id');
+    }
 }

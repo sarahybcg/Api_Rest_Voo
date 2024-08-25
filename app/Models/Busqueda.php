@@ -14,8 +14,8 @@ class Busqueda extends Model
     protected $fillable=array("*");
  
     //hasMany para indicar que una Busqueda puede estar asociada con varios usuarios.
-    public function busqueda()
+    public function usuario()
     {
-    return $this->hasMany(Busqueda::class, 'idUsuario');  
+        return $this->belongsTo(Usuario::class, 'idUsuario');
     }
 }

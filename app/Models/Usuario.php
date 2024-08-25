@@ -22,18 +22,36 @@ class Usuario extends Model
      //belongsTo para indicar que la busqueda pertenece a un usuario.
      public function busqueda()
      {
-         return $this->belongsTo(Busqueda::class, 'idBusqueda');  
+         return $this->hasMany(Busqueda::class, 'idUsuario');
      }
 
       //belongsTo para indicar que la notificaciones pertenece a un usuario.
       public function notificacion()
-      {
-          return $this->belongsTo(Notificacion::class, 'idNotificacion');  
-      }
+    {
+        return $this->hasMany(Notificacion::class, 'idUsuario');
+    }
 
-      public function historialViajes()
+    public function experiencia()
+    {
+        return $this->hasMany(Experiencia::class, 'idUsuario');
+    }
+    public function propietario()
+    {
+        return $this->hasOne(Propietario::class, 'idUsuario');
+    }
+
+    public function conductor()
+    {
+        return $this->hasOne(Conductor::class, 'idUsuario');
+    }
+    public function linea()
+    {
+        return $this->hasMany(Linea::class, 'idUsuario');
+    }
+    public function historialViajes()
     {
         return $this->hasMany(HistorialViaje::class, 'idUsuario');
     }
+
 }
   

@@ -13,18 +13,18 @@ class Trayecto extends Model
     
     protected $fillable=array("*");  
 
-       public function parada()
-       {
-           return $this->belongsToMany(Parada::class, 'trayecto_paradas');  
-       }
-
-       public function linea()
-       {
-           return $this->belongsToMany(Linea::class, 'linea_trayecto');  
-       }
+    public function lineas()
+    {
+        return $this->belongsToMany(Linea::class, 'linea_trayectos', 'idTrayecto', 'idLinea');
+    }
+ 
+    public function paradas()
+    {
+        return $this->belongsToMany(Parada::class, 'trayecto_paradas', 'trayecto_id', 'parada_id');
+    }
 
        public function historialViajes()
-     {
+    {
         return $this->hasMany(HistorialViaje::class, 'idTrayecto');
-     }
+    }
 }

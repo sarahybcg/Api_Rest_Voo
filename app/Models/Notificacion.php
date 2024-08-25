@@ -14,14 +14,16 @@ class Notificacion extends Model
     protected $fillable=array("*");
     
  //hasMany para indicar que una notif puede estar asociada con varios usuarios.
+    
     public function usuario()
     {
-        return $this->hasMany(Usuario::class, 'idNotificacion');  
+        return $this->belongsTo(Usuario::class, 'idUsuario');
     }
 
+    
     //belongsTo para indicar que la notificaciones pertenece a una prioridad.
-    public function prioridad()
+    public function prioridad() 
     {
-        return $this->belongsTo(Prioridad::class, 'idPrioridad');  
+        return $this->belongsTo(Prioridad::class, 'idPrioridad');
     }
 }

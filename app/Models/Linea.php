@@ -13,9 +13,17 @@ class Linea extends Model
     
     protected $fillable=array("*");  
 
-        
-       public function trayecto()
-       {
-           return $this->belongsToMany(Trayecto::class, 'linea_trayecto');  
-       }
+    public function usuario()
+    {
+        return $this->belongsTo(Usuario::class, 'idUsuario');
+    }
+    public function autobuses()
+    {
+        return $this->hasMany(Autobus::class, 'idLinea');
+    }
+    public function trayectos()
+    {
+        return $this->belongsToMany(Trayecto::class, 'linea_trayectos', 'idLinea', 'idTrayecto');
+    }
+     
 }
