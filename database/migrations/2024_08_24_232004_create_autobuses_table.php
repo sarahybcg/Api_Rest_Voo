@@ -9,16 +9,18 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('autobuses', function (Blueprint $table) {
-            $table->string('Placa_', 15)->primary();
-            $table->string('nombreLinea', 15);
-            $table->string('ciUsuario', 10);
+            $table->id();
+            $table->string('Placa_', 15)->unique();
+            $table->unsignedBigInteger('idLinea');
+            $table->unsignedBigInteger('idUsuario');
             $table->integer('capacidad');
             $table->unsignedBigInteger('idModelo');
             $table->unsignedBigInteger('idCondicion');
-            $table->foreign('nombreLinea')->references('Linea_')->on('lineas');
-            $table->foreign('ciUsuario')->references('CI_')->on('usuarios');
-            $table->foreign('idModelo')->references('id')->on('modelos');
-            $table->foreign('idCondicion')->references('id')->on('condicions');
+
+            $table->foreign('idLinea')->references('id')->on('lineas')->onDelete('cascade');
+            $table->foreign('idUsuario')->references('id')->on('usuarios')->onDelete('cascade');
+            $table->foreign('idModelo')->references('id')->on('modelos')->onDelete('cascade');
+            $table->foreign('idCondicion')->references('id')->on('condicions')->onDelete('cascade');
             $table->timestamps();
         });
     } 

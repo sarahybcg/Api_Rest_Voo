@@ -9,9 +9,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('lineas', function (Blueprint $table) {
-            $table->string('Linea_', 15)->primary();
-            $table->string('ciUsuario', 10);
-            $table->foreign('ciUsuario')->references('CI_')->on('usuarios');  
+            $table->id();
+            $table->string('Linea_', 15)->unique();
+            $table->unsignedBigInteger('idUsuario'); 
+            
+            $table->foreign('idUsuario')->references('id')->on('usuarios')->onDelete('cascade');  
         });
     } 
     public function down(): void

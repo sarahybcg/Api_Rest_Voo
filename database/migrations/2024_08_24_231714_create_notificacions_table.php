@@ -10,14 +10,14 @@ return new class extends Migration
     {
         Schema::create('notificacions', function (Blueprint $table) {
             $table->id();
-            $table->string('ciUsuario', 10);
+            $table->unsignedBigInteger('idUsuario');  
             $table->string('titulo', 80);
             $table->string('descripcion', 255);
             $table->dateTime('fechaEnvio');
             $table->unsignedBigInteger('idPrioridad');
 
-            $table->foreign('ciUsuario')
-              ->references('CI_')
+            $table->foreign('idUsuario')
+              ->references('id')
               ->on('usuarios')
               ->onDelete('cascade');  
               

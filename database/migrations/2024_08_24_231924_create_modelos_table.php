@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
             $table->string('nombre', 80);
             $table->unsignedBigInteger('idMarca');
-            $table->foreign('idMarca')->references('id')->on('marcas');
+            $table->foreign('idMarca')->references('id')->on('marcas')->onDelete('cascade');
             $table->timestamps();
         });
     } 

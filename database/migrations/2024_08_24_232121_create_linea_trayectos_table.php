@@ -9,11 +9,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('linea_trayectos', function (Blueprint $table) { 
-            $table->string('nombreLinea', 15);
-            $table->unsignedBigInteger('idTrayecto');
-            $table->primary(['nombreLinea', 'idTrayecto']);
-            $table->foreign('nombreLinea')->references('Linea_')->on('lineas');
-            $table->foreign('idTrayecto')->references('id')->on('trayectos');
+            $table->id();
+            $table->unsignedBigInteger('idLinea');
+            $table->unsignedBigInteger('idTrayecto'); 
+
+            $table->foreign('idLinea')->references('id')->on('lineas')->onDelete('cascade');
+
+            $table->foreign('idTrayecto')->references('id')->on('trayectos')->onDelete('cascade');
+
             $table->timestamps();  
         });
     } 

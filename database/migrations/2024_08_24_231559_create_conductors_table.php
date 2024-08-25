@@ -9,9 +9,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('conductors', function (Blueprint $table) {
-            $table->string('ciUsuario', 10)->primary();
-            $table->string('licenciaConducir',255);
-            $table->foreign('ciUsuario')->references('CI_')->on('usuarios');
+            $table->id();
+            $table->unsignedBigInteger('idUsuario');
+            $table->text('licenciaConducir');
+            $table->foreign('idUsuario')
+                    ->references('id')
+                    ->on('usuarios')
+                    ->onDelete('cascade');
             $table->timestamps();
         });
     } 

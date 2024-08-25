@@ -10,12 +10,12 @@ return new class extends Migration
     {
         Schema::create('busquedas', function (Blueprint $table) {
             $table->id();  
-            $table->string('ciUsuario', 10);  
+            $table->unsignedBigInteger('idUsuario');  
             $table->string('consulta', 50);   
             $table->date('fechaBusqueda')->nullable();  
             $table->text('resultado')->nullable();  
-            $table->foreign('ciUsuario')
-                  ->references('CI_')
+            $table->foreign('idUsuario')
+                  ->references('id')
                   ->on('usuarios')
                   ->onDelete('cascade');  
             $table->timestamps(); 

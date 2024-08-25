@@ -12,6 +12,7 @@ return new class extends Migration
             $table->id();
             $table->text('comentario');
             $table->unsignedBigInteger('idExperiencia');
+            
             $table->foreign('idExperiencia')->references('id')->on('experiencias');
             $table->timestamps();
         });

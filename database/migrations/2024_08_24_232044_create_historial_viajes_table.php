@@ -10,17 +10,17 @@ return new class extends Migration
     {
         Schema::create('historial_viajes', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('trayecto_id');
-            $table->string('placa_autobus', 15);
-            $table->string('ci_usuario', 10);
+            $table->unsignedBigInteger('idTrayecto');
+            $table->unsignedBigInteger('idAutobus');
+            $table->unsignedBigInteger('idUsuario');
             $table->dateTime('tiempo_inicio');
             $table->dateTime('tiempo_fin')->nullable();
             $table->time('duracion')->nullable();
             $table->string('estado')->default('en progreso');  
 
-            $table->foreign('trayecto_id')->references('id')->on('trayectos');
-            $table->foreign('placa_autobus')->references('Placa_')->on('autobuses');
-            $table->foreign('ci_usuario')->references('CI_')->on('usuarios');
+            $table->foreign('idTrayecto')->references('id')->on('trayectos')->onDelete('cascade');
+            $table->foreign('idAutobus')->references('id')->on('autobuses')->onDelete('cascade');
+            $table->foreign('idUsuario')->references('id')->on('usuarios')->onDelete('cascade');
             $table->timestamps();
         });
     } 

@@ -8,4 +8,14 @@ use Illuminate\Database\Eloquent\Model;
 class Prioridad extends Model
 {
     use HasFactory;
+
+    public $table= "prioridads";
+
+    protected $fillable=array("*");
+
+ //hasMany para indicar que una prioridad puede estar asociada con varios notif.
+    public function notificacion()
+    {
+        return $this->hasMany(Notificacion::class, 'idNotificacion');  
+    }
 }

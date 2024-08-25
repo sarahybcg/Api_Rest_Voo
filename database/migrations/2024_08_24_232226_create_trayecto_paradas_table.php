@@ -9,12 +9,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('trayecto_paradas', function (Blueprint $table) {
+            $table->id();
             $table->unsignedBigInteger('trayecto_id'); 
-            $table->unsignedBigInteger('parada_id');  
-            $table->primary(['trayecto_id', 'parada_id']); 
+            $table->unsignedBigInteger('parada_id');   
 
             $table->foreign('trayecto_id')->references('id')->on('trayectos')->onDelete('cascade');  
+
             $table->foreign('parada_id')->references('id')->on('paradas')->onDelete('cascade');  
+            
             $table->timestamps();
         });
     } 
