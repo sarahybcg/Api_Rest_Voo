@@ -2,13 +2,13 @@
 
 namespace Database\Factories;
 
+use App\Models\Marca;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Modelo>
- */
+ 
 class ModeloFactory extends Factory
 {
+    protected $model = \App\Models\Modelo::class;
     /**
      * Define the model's default state.
      *
@@ -17,7 +17,8 @@ class ModeloFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'nombre' => $this->faker->word,  
+            'idMarca' => Marca::inRandomOrder()->first()->id, 
         ];
     }
 }

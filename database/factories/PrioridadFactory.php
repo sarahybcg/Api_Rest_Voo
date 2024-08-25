@@ -2,13 +2,12 @@
 
 namespace Database\Factories;
 
+use App\Models\Prioridad;
 use Illuminate\Database\Eloquent\Factories\Factory;
-
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Prioridad>
- */
+ 
 class PrioridadFactory extends Factory
 {
+    protected $model = Prioridad::class;
     /**
      * Define the model's default state.
      *
@@ -17,7 +16,7 @@ class PrioridadFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'nombrePrioridad' => $this->faker->word(),  
         ];
     }
 }

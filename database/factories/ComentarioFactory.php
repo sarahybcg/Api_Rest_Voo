@@ -2,13 +2,13 @@
 
 namespace Database\Factories;
 
+use App\Models\Comentario;
+use App\Models\Experiencia;
 use Illuminate\Database\Eloquent\Factories\Factory;
-
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Comentario>
- */
+ 
 class ComentarioFactory extends Factory
 {
+    protected $model = Comentario::class;
     /**
      * Define the model's default state.
      *
@@ -17,7 +17,8 @@ class ComentarioFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'comentario' => $this->faker->paragraph,
+            'idExperiencia' => Experiencia::factory(),   
         ];
     }
 }

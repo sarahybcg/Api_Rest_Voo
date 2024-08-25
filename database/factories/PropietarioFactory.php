@@ -2,13 +2,14 @@
 
 namespace Database\Factories;
 
+use App\Models\Propietario;
+use App\Models\Usuario;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Propietario>
- */
+ 
 class PropietarioFactory extends Factory
 {
+    protected $model = Propietario::class;
     /**
      * Define the model's default state.
      *
@@ -17,7 +18,8 @@ class PropietarioFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'idUsuario' => Usuario::factory(),  
+            'carnetCirculacion' => $this->faker->unique()->text(200),  
         ];
     }
 }

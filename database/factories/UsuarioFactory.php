@@ -3,10 +3,7 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Usuario>
- */
+ 
 class UsuarioFactory extends Factory
 {
     /**
@@ -17,7 +14,13 @@ class UsuarioFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'CI_' => $this->faker->unique()->bothify('##########'),  
+            'nombre' => $this->faker->firstName(),
+            'apellido' => $this->faker->lastName(),
+            'telefono_' => $this->faker->phoneNumber(),
+            'fechaNacimiento' => $this->faker->date(),
+            'clave' => $this->faker->password(), 
+            'idRol' => \App\Models\Rol::factory(), 
         ];
     }
 }

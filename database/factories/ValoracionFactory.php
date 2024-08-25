@@ -2,13 +2,12 @@
 
 namespace Database\Factories;
 
+use App\Models\Valoracion;
 use Illuminate\Database\Eloquent\Factories\Factory;
-
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Valoracion>
- */
+ 
 class ValoracionFactory extends Factory
 {
+    protected $model = Valoracion::class;
     /**
      * Define the model's default state.
      *
@@ -17,7 +16,7 @@ class ValoracionFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'estrellas' => $this->faker->numberBetween(1, 5), // Genera un número aleatorio entre 1 y 5
         ];
     }
 }

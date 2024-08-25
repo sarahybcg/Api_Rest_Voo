@@ -2,13 +2,12 @@
 
 namespace Database\Factories;
 
+use App\Models\Condicion;
 use Illuminate\Database\Eloquent\Factories\Factory;
-
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Condicion>
- */
+ 
 class CondicionFactory extends Factory
 {
+    protected $model = Condicion::class;
     /**
      * Define the model's default state.
      *
@@ -17,7 +16,7 @@ class CondicionFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'nombreCondicion' => $this->faker->word,  
         ];
     }
 }
