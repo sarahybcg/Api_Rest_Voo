@@ -11,6 +11,7 @@ return new class extends Migration
         Schema::create('prioridads', function (Blueprint $table) {
             $table->id(); 
             $table->string('nombrePrioridad', 50);
+            $table->timestamps(); 
         });
     }
  

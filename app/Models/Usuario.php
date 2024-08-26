@@ -10,8 +10,15 @@ class Usuario extends Model
     use HasFactory;
 
     public $table= "usuarios";
-
-    protected $fillable=array("*");
+    protected $fillable=[
+        'CI_', 
+        'nombre',
+        'apellido',
+        'telefono_',
+        'fechaNacimiento',
+        'clave',
+        'idRol'
+    ];
  
     //belongsTo para indicar que cada usuario tiene un rol.
     public function rol()

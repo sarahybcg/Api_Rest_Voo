@@ -10,7 +10,8 @@ return new class extends Migration
     {
         Schema::create('condicions', function (Blueprint $table) {
             $table->id();
-            $table->string('nombreCondicion', 50);
+            $table->string('condicion', 50);
+            $table->timestamps(); 
         });
     } 
     public function down(): void

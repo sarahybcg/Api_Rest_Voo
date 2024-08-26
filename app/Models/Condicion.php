@@ -13,7 +13,7 @@ class Condicion extends Model
 
     protected $fillable =array("*");
  
-    public function autobuses()
+    public function autobus()
     {
         return $this->hasMany(Autobus::class, 'idCondicion');
     }

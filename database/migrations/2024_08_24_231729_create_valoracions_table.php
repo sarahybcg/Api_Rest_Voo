@@ -10,7 +10,8 @@ return new class extends Migration
     {
         Schema::create('valoracions', function (Blueprint $table) {
             $table->id(); 
-            $table->integer('estrellas')->check('estrellas >= 1 AND estrellas <= 5'); 
+            $table->integer('estrellas')->check('estrellas >= 1 AND estrellas <= 5');
+            $table->timestamps(); 
         });
     } 
     public function down(): void

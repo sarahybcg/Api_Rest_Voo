@@ -20,8 +20,9 @@ return new class extends Migration
             $table->foreign('idLinea')->references('id')->on('lineas')->onDelete('cascade');
             $table->foreign('idUsuario')->references('id')->on('usuarios')->onDelete('cascade');
             $table->foreign('idModelo')->references('id')->on('modelos')->onDelete('cascade');
-            $table->foreign('idCondicion')->references('id')->on     ('condicions')->onDelete('cascade');
-            $table->timestamps();
+            $table->foreign('idCondicion')->references('id')->on('condicions');
+            
+            $table->timestamps(); 
         });
     } 
     public function down(): void

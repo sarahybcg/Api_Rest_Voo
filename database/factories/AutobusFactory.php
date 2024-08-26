@@ -1,32 +1,27 @@
 <?php
 
-namespace Database\Factories;
-
-use App\Models\Autobus;
-use App\Models\Linea;
-use App\Models\Usuario;
-use App\Models\Modelo;
-use App\Models\Condicion;
-use Illuminate\Database\Eloquent\Factories\Factory;
+/*namespace Database\Factories;
 
  
+use Illuminate\Database\Eloquent\Factories\Factory;
+use App\Models\Modelo;
+use App\Models\Condicion;
+use App\Models\Usuario;
+use App\Models\Linea;  
+
 class AutobusFactory extends Factory
-{
-    protected $model = Autobus::class;
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
-    public function definition(): array
+{ 
+    public function definition()
     {
         return [
-            'Placa_' => strtoupper($this->faker->bothify('???-####')),  
-            'idLinea' => Linea::factory(),   
-            'idUsuario' => Usuario::factory(),  
-            'capacidad' => $this->faker->numberBetween(30, 60),   
-            'idModelo' => Modelo::factory(),  
-            'idCondicion' => Condicion::factory(),   
+           /*'Placa_' => $this->faker->unique()->word,
+            'idLinea' => Linea::factory(),  
+            'idUsuario' =>  Usuario::factory(),  
+            'capacidad' => $this->faker->numberBetween(10, 50),
+            'idModelo' =>  Modelo::factory(),  
+            'idCondicion' =>  Condicion::factory(),
+            'created_at' => now(),
+            'updated_at' => now(), 
         ];
     }
-}
+}*/
