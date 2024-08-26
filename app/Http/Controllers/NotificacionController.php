@@ -4,46 +4,114 @@ namespace App\Http\Controllers;
 
 use App\Models\Notificacion;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
+
 
 class NotificacionController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+     
     public function index()
     {
-        //
+        $notificaciones = Notificacion::with(['usuario', 'prioridad'])->get();
+
+        return response()->json([
+            'error' => false,
+            'data' => $notificaciones,
+        ], 200);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+     
     public function store(Request $request)
     {
-        //
-    }
+        try {
+            $validatedData = $request->validate([
+                'idUsuario' => 'required|exists:usuarios,id',
+                'titulo' => 'required|string|max:80',
+                'descripcion' => 'required|string|max:255',
+                'fechaEnvio' => 'required|date',
+                'idPrioridad' => 'required|exists:prioridads,id',
+            ]);
 
-    /**
-     * Display the specified resource.
-     */
+            $notificacion = Notificacion::create($validatedData);
+
+            return response()->json([
+                'error' => false,
+                'mensaje' => 'Notificación creada con éxito',
+                'data' => $notificacion,
+            ], 201);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'error' => true,
+                'mensaje' => 'Datos de entrada no válidos',
+                'errors' => $e->errors(),
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => true,
+                'mensaje' => 'Error al crear la notificación',
+                'exception' => $e->getMessage(),
+            ], 500);
+        }
+    }
+ 
     public function show(Notificacion $notificacion)
     {
-        //
+        return response()->json([
+            'error' => false,
+            'data' => $notificacion->load(['usuario', 'prioridad']),
+        ], 200);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
+ 
     public function update(Request $request, Notificacion $notificacion)
     {
-        //
+        try {
+            $validatedData = $request->validate([
+                'idUsuario' => 'required|exists:usuarios,id',
+                'titulo' => 'required|string|max:80',
+                'descripcion' => 'required|string|max:255',
+                'fechaEnvio' => 'required|date',
+                'idPrioridad' => 'required|exists:prioridads,id',
+            ]);
+
+            $notificacion->update($validatedData);
+
+            return response()->json([
+                'error' => false,
+                'mensaje' => 'Notificación actualizada con éxito',
+                'data' => $notificacion,
+            ], 200);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'error' => true,
+                'mensaje' => 'Datos de entrada no válidos',
+                'errors' => $e->errors(),
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => true,
+                'mensaje' => 'Error al actualizar la notificación',
+                'exception' => $e->getMessage(),
+            ], 500);
+        }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
+  
     public function destroy(Notificacion $notificacion)
     {
-        //
+        try {
+            $notificacion->delete();
+
+            return response()->json([
+                'error' => false,
+                'mensaje' => 'Notificación eliminada con éxito',
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => true,
+                'mensaje' => 'Error al eliminar la notificación',
+                'exception' => $e->getMessage(),
+            ], 500);
+        }
     }
 }

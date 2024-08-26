@@ -11,7 +11,14 @@ class Notificacion extends Model
 
     public $table= "notificacions";
 
-    protected $fillable=array("*");
+    protected $fillable=[
+        'idUsuario',
+        'titulo',
+        'descripcion',
+        'fechaEnvio',
+        'idPrioridad',
+    ];
+
     
  //hasMany para indicar que una notif puede estar asociada con varios usuarios.
     

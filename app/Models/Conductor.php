@@ -11,7 +11,10 @@ class Conductor extends Model
 
     public $table= "conductors";
 
-    protected $fillable=array("*");
+    protected $fillable=[
+        'idUsuario',
+        'licenciaConducir',
+    ];
 
     public function usuario()
     {

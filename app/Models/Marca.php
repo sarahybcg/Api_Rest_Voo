@@ -11,7 +11,9 @@ class Marca extends Model
 
     public $table= "marcas";
 
-    protected $fillable=array("*");
+    protected $fillable=[
+        'nombre',
+    ];
 
  //hasMany para indicar que un marc puede estar asociado con varios modelos.
 

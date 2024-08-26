@@ -9,7 +9,15 @@ class HistorialViaje extends Model
 {
     public $table= "historialViajes";
 
-    protected $fillable =array("*");
+    protected $fillable =[
+        'idTrayecto',
+        'idAutobus',
+        'idUsuario',
+        'tiempo_inicio',
+        'tiempo_fin',
+        'duracion',
+        'estado',
+    ];
 
     public function trayecto()
     {

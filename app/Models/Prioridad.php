@@ -11,7 +11,9 @@ class Prioridad extends Model
 
     public $table= "prioridads";
 
-    protected $fillable=array("*");
+    protected $fillable=[
+        'nombrePrioridad',
+    ];
 
  //hasMany para indicar que una prioridad puede estar asociada con varios notif.
         public function notificacion()

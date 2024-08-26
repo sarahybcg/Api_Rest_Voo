@@ -11,7 +11,16 @@ class Autobus extends Model
 
     public $table= "autobuses";
 
-    protected $fillable =array("*");
+    protected $fillable =[
+        'Placa_',
+        'idLinea',
+        'idUsuario',
+        'capacidad',
+        'idModelo',
+        'idCondicion',
+    ];
+
+    
  
     public function linea()
     {

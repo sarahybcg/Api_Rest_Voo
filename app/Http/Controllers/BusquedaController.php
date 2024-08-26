@@ -4,46 +4,110 @@ namespace App\Http\Controllers;
 
 use App\Models\Busqueda;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class BusquedaController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    
     public function index()
     {
-        //
-    }
+        $busquedas = Busqueda::all();
 
-    /**
-     * Store a newly created resource in storage.
-     */
+        return response()->json([
+            'error' => false,
+            'data' => $busquedas,
+        ], 200);
+    }
+ 
     public function store(Request $request)
     {
-        //
-    }
+        try {
+            $validatedData = $request->validate([
+                'idUsuario' => 'required|exists:usuarios,id',
+                'consulta' => 'required|string|max:50',
+                'fechaBusqueda' => 'nullable|date',
+                'resultado' => 'nullable|string',
+            ]);
 
-    /**
-     * Display the specified resource.
-     */
+            $busqueda = Busqueda::create($validatedData);
+
+            return response()->json([
+                'error' => false,
+                'mensaje' => 'Búsqueda creada con éxito',
+                'data' => $busqueda,
+            ], 201);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'error' => true,
+                'mensaje' => 'Datos de entrada no válidos',
+                'errors' => $e->errors(),
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => true,
+                'mensaje' => 'Error al crear la búsqueda',
+                'exception' => $e->getMessage(),
+            ], 500);
+        }
+    }
+ 
     public function show(Busqueda $busqueda)
     {
-        //
+        return response()->json([
+            'error' => false,
+            'data' => $busqueda,
+        ], 200);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
+    
     public function update(Request $request, Busqueda $busqueda)
     {
-        //
+        try {
+            $validatedData = $request->validate([
+                'idUsuario' => 'required|exists:usuarios,id',
+                'consulta' => 'required|string|max:50',
+                'fechaBusqueda' => 'nullable|date',
+                'resultado' => 'nullable|string',
+            ]);
+
+            $busqueda->update($validatedData);
+
+            return response()->json([
+                'error' => false,
+                'mensaje' => 'Búsqueda actualizada con éxito',
+                'data' => $busqueda,
+            ], 200);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'error' => true,
+                'mensaje' => 'Datos de entrada no válidos',
+                'errors' => $e->errors(),
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => true,
+                'mensaje' => 'Error al actualizar la búsqueda',
+                'exception' => $e->getMessage(),
+            ], 500);
+        }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
+    
     public function destroy(Busqueda $busqueda)
     {
-        //
+        try {
+            $busqueda->delete();
+
+            return response()->json([
+                'error' => false,
+                'mensaje' => 'Búsqueda eliminada con éxito',
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => true,
+                'mensaje' => 'Error al eliminar la búsqueda',
+                'exception' => $e->getMessage(),
+            ], 500);
+        }
     }
 }
