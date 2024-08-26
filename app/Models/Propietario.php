@@ -11,7 +11,10 @@ class Propietario extends Model
 
     public $table= "propietarios";
 
-    protected $fillable=array("*");
+    protected $fillable=[
+        'idUsuario',
+        'carnetCirculacion',
+    ];
 
     public function usuario()
     {

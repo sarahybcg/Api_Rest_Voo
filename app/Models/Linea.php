@@ -10,12 +10,14 @@ class Linea extends Model
     use HasFactory;
 
     public $table= "lineas";
-    
-    protected $fillable=array("*");  
+    protected $fillable = [
+        'Linea_',
+        'idUsuario',
+    ];
 
     public function usuario()
     {
-        return $this->belongsTo(Usuario::class, 'idUsuario');
+        return $this->belongsTo(Usuario::class, 'idUsuario'); 
     }
     public function autobuses()
     {

@@ -17,7 +17,7 @@ class Notificacion extends Model
     
     public function usuario()
     {
-        return $this->belongsTo(Usuario::class, 'idUsuario');
+        return $this->hasMany(Usuario::class, 'idUsuario');
     }
 
     
