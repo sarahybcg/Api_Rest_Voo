@@ -11,7 +11,9 @@ class Valoracion extends Model
 
     public $table= "valoracions";
 
-    protected $fillable=array("*");
+    protected $fillable= [
+        'estrellas',
+    ];
 
     // una valoracion puede pertenecer a varias exp
     public function experiencias()

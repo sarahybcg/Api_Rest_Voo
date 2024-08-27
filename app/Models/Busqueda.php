@@ -11,7 +11,12 @@ class Busqueda extends Model
 
     public $table= "busquedas";
 
-    protected $fillable=array("*");
+    protected $fillable=[
+        'idUsuario',
+        'consulta',
+        'fechaBusqueda',
+        'resultado',
+    ];
  
     //hasMany para indicar que una Busqueda puede estar asociada con varios usuarios.
     public function usuario()

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Trayecto;
 use App\Models\TrayectoParada;
 use Illuminate\Http\Request;
 
@@ -26,7 +27,7 @@ class TrayectoParadaController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(TrayectoParada $trayectoParada)
+    public function show(Trayecto $trayectoParada)
     {
         //
     }
@@ -34,7 +35,7 @@ class TrayectoParadaController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, TrayectoParada $trayectoParada)
+    public function update(Request $request, Trayecto $trayectoParada)
     {
         //
     }
@@ -42,7 +43,7 @@ class TrayectoParadaController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(TrayectoParada $trayectoParada)
+    public function destroy(Trayecto $trayectoParada)
     {
         //
     }

@@ -11,7 +11,14 @@ class Trayecto extends Model
 
     public $table= "trayectos";
     
-    protected $fillable=array("*");  
+    protected $fillable=[
+        'nombre_trayecto',
+        'descripcion',
+        'origen',
+        'destino',
+        'distancia',
+    ];
+
 
     public function lineas()
     {

@@ -146,7 +146,7 @@ class UsuarioController extends Controller
     }
     public function destroy(Usuario $usuario)  
     {
-        try {
+         try {
             // Elimina el usuario
             $usuario->delete();
 

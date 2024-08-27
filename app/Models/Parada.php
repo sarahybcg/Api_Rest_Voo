@@ -11,7 +11,12 @@ class Parada extends Model
 
     public $table= "paradas";
     
-    protected $fillable=array("*");
+    protected $fillable= [
+        'nombre',
+        'descripcion',
+        'latitud',
+        'longitud',
+    ];
     
     public function trayectos()
     {

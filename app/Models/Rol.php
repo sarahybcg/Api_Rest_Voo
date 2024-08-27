@@ -11,7 +11,10 @@ class Rol extends Model
 
     public $table= "rols";
 
-    protected $fillable=array("*");
+    protected $fillable = [
+        'nombreRol',
+    ];
+    
  //hasMany para indicar que un rol puede estar asociado con varios usuarios.
     public function usuario()
     {

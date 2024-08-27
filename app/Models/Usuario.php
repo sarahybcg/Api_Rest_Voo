@@ -11,6 +11,7 @@ class Usuario extends Model
 
     public $table= "usuarios";
     protected $fillable=[
+        'id',
         'CI_', 
         'nombre',
         'apellido',
@@ -35,7 +36,7 @@ class Usuario extends Model
       //belongsTo para indicar que la notificaciones pertenece a un usuario.
       public function notificacion()
     {
-        return $this->hasMany(Notificacion::class, 'idUsuario');
+        return $this->belongsTo(Notificacion::class, 'idUsuario');
     }
 
     public function experiencia()
@@ -53,7 +54,7 @@ class Usuario extends Model
     }
     public function linea()
     {
-        return $this->hasMany(Linea::class, 'idUsuario');
+        return $this->hasOne(Linea::class, 'idUsuario'); 
     }
     public function historialViajes()
     {

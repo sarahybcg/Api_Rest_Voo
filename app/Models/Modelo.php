@@ -11,7 +11,10 @@ class Modelo extends Model
 
     public $table= "modelos";
 
-    protected $fillable=array("*");
+    protected $fillable=[
+        'nombre',
+        'idMarca',
+    ];
 
  //modelo pertenece a una marc
 

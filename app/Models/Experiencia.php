@@ -12,7 +12,12 @@ class Experiencia extends Model
 
     public $table= "experiencias";
 
-    protected $fillable=array("*");
+    protected $fillable=[
+        'idUsuario',
+        'idValoracion',
+        'fechaEnvio',
+    ];
+
  //hasMany para indicar que una experiencia puede estar asociado con varios comentarios.
     public function comentario()
     {

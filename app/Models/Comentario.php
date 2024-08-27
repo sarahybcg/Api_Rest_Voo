@@ -11,7 +11,10 @@ class Comentario extends Model
 
     public $table= "comentarios";
 
-    protected $fillable=array("*");
+    protected $fillable=[
+        'comentario',
+        'idExperiencia',
+    ];
 
      //belongsTo para indicar que la expe pertenece a un coment.
      public function experiencia()

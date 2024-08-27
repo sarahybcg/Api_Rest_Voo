@@ -11,7 +11,9 @@ class Condicion extends Model
 
     public $table= "Condicions";
 
-    protected $fillable =array("*");
+    protected $fillable =[
+        'condicion',
+    ];
  
     public function autobus()
     {
