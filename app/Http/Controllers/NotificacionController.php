@@ -12,7 +12,7 @@ class NotificacionController extends Controller
      
     public function index()
     {
-        $notificaciones = Notificacion::with(['usuario', 'prioridad'])->get();
+        $notificaciones = Notificacion::all();
 
         return response()->json([
             'error' => false,
@@ -58,7 +58,7 @@ class NotificacionController extends Controller
     {
         return response()->json([
             'error' => false,
-            'data' => $notificacion->load(['usuario', 'prioridad']),
+            'data' => $notificacion,
         ], 200);
     }
 

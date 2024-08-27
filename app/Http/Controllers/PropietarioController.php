@@ -56,6 +56,7 @@ class PropietarioController extends Controller
             'data' => $propietario,
         ], 200);
     } 
+    
     public function update(Request $request, Propietario $propietario)
     {
         try {
