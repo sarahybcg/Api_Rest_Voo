@@ -7,15 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class HistorialViaje extends Model
 {
-    public $table= "historialViajes";
+    public $table= "historial_viajes";
 
     protected $fillable =[
         'idTrayecto',
         'idAutobus',
         'idUsuario',
         'tiempo_inicio',
-        'tiempo_fin',
-        'duracion',
+        'tiempo_fin', 
         'estado',
     ];
 

@@ -10,12 +10,12 @@ class HistorialViajeController extends Controller
 { 
     public function index()
     {
-        $historialViajes = HistorialViaje::with(['trayecto', 'autobus', 'usuario'])->get();
+        $historialViajes = HistorialViaje::all();
 
         return response()->json([
             'error' => false,
             'data' => $historialViajes,
-        ], 200);
+        ], 200); 
     }
  
     public function store(Request $request)
@@ -57,13 +57,12 @@ class HistorialViajeController extends Controller
     }
  
     public function show(HistorialViaje $historialViaje)
-    {
-        $historialViaje->load(['trayecto', 'autobus', 'usuario']);
-
+    { 
         return response()->json([
             'error' => false,
             'data' => $historialViaje,
         ], 200);
+ 
     }
  
     public function update(Request $request, HistorialViaje $historialViaje)

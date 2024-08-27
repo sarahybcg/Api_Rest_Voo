@@ -21,6 +21,9 @@ class Usuario extends Model
         'idRol'
     ];
  
+    protected $hidden = [
+        'clave',
+    ];
     //belongsTo para indicar que cada usuario tiene un rol.
     public function rol()
     {

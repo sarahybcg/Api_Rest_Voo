@@ -68,7 +68,7 @@ class ConductorController extends Controller
 
             return response()->json([
                 'error' => false,
-                'mensaje' => 'Propietario actualizado con éxito',
+                'mensaje' => 'Conductor actualizado con éxito',
                 'data' => $conductor,
             ], 200);
         } catch (ValidationException $e) {
