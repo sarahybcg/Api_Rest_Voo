@@ -15,8 +15,10 @@ class LineaFactory extends Factory
             'Linea_' => $this->faker->unique()->word,
             'idUsuario_admin' => Usuario::factory(),
             'Dir_Oficina' => $this->faker->word,
+            'Rif_' => $this->faker->unique()->numerify('J#########'), // Ajusta según el formato de tu RIF
 
 
         ];
     }
 }
+

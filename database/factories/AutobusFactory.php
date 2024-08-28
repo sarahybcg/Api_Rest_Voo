@@ -8,6 +8,7 @@ use App\Models\Modelo;
 use App\Models\Condicion;
 use App\Models\Usuario;
 use App\Models\Linea;  
+use App\Models\Conductor;  
 
 class AutobusFactory extends Factory
 { 
