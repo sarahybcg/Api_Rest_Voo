@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use App\Models\Rol;
+use Illuminate\Support\Facades\Hash;
 
 class UsuarioFactory extends Factory
 {
@@ -16,8 +17,7 @@ class UsuarioFactory extends Factory
             'apellido' => $this->faker->lastName,
             'telefono_' => $this->faker->numerify('##########'), // Ajustado para 10 dígitos
             'fechaNacimiento' => $this->faker->date(),
-            'clave' => $this->faker->password,
-            'idRol' => Rol::factory(),
+            'clave' => Hash::make($this->faker->password)
         ];
     }
 }

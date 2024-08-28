@@ -21,6 +21,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\ValoracionController;
 use App\Models\HistorialViaje;
+use App\Http\Controllers\AuthController; // Asegúrate de importar el controlador de autenticación
+
 
 Route::apiResource('/usuarios', UsuarioController::class);
 Route::apiResource('/rols', RolController::class);
@@ -40,3 +42,4 @@ Route::apiResource('/historial_viajes', HistorialViajeController::class);
 Route::apiResource('/paradas', ParadaController::class);
 Route::apiResource('/prioridads', PrioridadController::class);
 Route::apiResource('/notificacions', NotificacionController::class);
+Route::post('/login', [AuthController::class, 'login']);

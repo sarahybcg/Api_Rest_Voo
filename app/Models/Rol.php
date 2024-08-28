@@ -9,15 +9,15 @@ class Rol extends Model
 {
     use HasFactory;
 
-    public $table= "rols";
+    protected $table = 'rols';
 
     protected $fillable = [
         'nombreRol',
     ];
     
- //hasMany para indicar que un rol puede estar asociado con varios usuarios.
-    public function usuario()
+    // Relación con usuarios
+    public function users()
     {
-        return $this->hasMany(Usuario::class, 'idRol');  
+        return $this->belongsToMany(User::class, 'rol_usuarios', 'rol_id', 'usuario_id');
     }
 }
