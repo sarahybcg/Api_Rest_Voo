@@ -1,6 +1,6 @@
 <?php
 
-/*namespace Database\Factories;
+namespace Database\Factories;
 
  
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -14,14 +14,14 @@ class AutobusFactory extends Factory
     public function definition()
     {
         return [
-           /*'Placa_' => $this->faker->unique()->word,
+           'Placa_' => $this->faker->unique()->word,
             'idLinea' => Linea::factory(),  
             'idUsuario' =>  Usuario::factory(),  
             'capacidad' => $this->faker->numberBetween(10, 50),
             'idModelo' =>  Modelo::factory(),  
-            'idCondicion' =>  Condicion::factory(),
+            'idCondicion' => Condicion::factory(),
             'created_at' => now(),
             'updated_at' => now(), 
         ];
     }
-}*/
+}

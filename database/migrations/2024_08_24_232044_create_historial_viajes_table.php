@@ -15,7 +15,6 @@ return new class extends Migration
             $table->unsignedBigInteger('idUsuario');
             $table->dateTime('tiempo_inicio');
             $table->dateTime('tiempo_fin')->nullable();
-            $table->time('duracion')->nullable();
             $table->string('estado')->default('en progreso');  
 
             $table->foreign('idTrayecto')->references('id')->on('trayectos')->onDelete('cascade');

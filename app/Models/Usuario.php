@@ -9,8 +9,9 @@ class Usuario extends Model
 {
     use HasFactory;
 
-    public $table= "usuarios";
-    protected $fillable=[
+    public $table = "usuarios";
+    
+    protected $fillable = [
         'id',
         'CI_', 
         'nombre',
@@ -18,50 +19,62 @@ class Usuario extends Model
         'telefono_',
         'fechaNacimiento',
         'clave',
-        'idRol'
     ];
  
     protected $hidden = [
         'clave',
     ];
-    //belongsTo para indicar que cada usuario tiene un rol.
-    public function rol()
+
+    /**
+     * Relación muchos a muchos con la tabla `rols` a través de la tabla pivote `rol_usuario`.
+     */
+  
+    // Relación con la tabla `busquedas`.
+    public function busquedas()
     {
-        return $this->belongsTo(Rol::class, 'idRol');  
+        return $this->hasMany(Busqueda::class, 'idUsuario');
     }
 
-     //belongsTo para indicar que la busqueda pertenece a un usuario.
-     public function busqueda()
-     {
-         return $this->hasMany(Busqueda::class, 'idUsuario');
-     }
-
-      //belongsTo para indicar que la notificaciones pertenece a un usuario.
-      public function notificacion()
+    // Relación con la tabla `notificacions`.
+    public function notificaciones()
     {
-        return $this->belongsTo(Notificacion::class, 'idUsuario');
+        return $this->hasMany(Notificacion::class, 'idUsuario');
     }
+<<<<<<< HEAD
     public function experiencia()
+=======
+
+    // Relación con la tabla `experiencias`.
+    public function experiencias()
+>>>>>>> e01c0281269764e2d11b17e949b811dfd83f37bb
     {
         return $this->hasMany(Experiencia::class, 'idUsuario');
     }
+
+    // Relación uno a uno con la tabla `propietarios`.
     public function propietario()
     {
         return $this->hasOne(Propietario::class, 'idUsuario');
     }
 
+    // Relación uno a uno con la tabla `conductors`.
     public function conductor()
     {
         return $this->hasOne(Conductor::class, 'idUsuario');
     }
+
+    // Relación uno a uno con la tabla `lineas`.
     public function linea()
     {
         return $this->hasOne(Linea::class, 'idUsuario'); 
     }
+
+    // Relación con la tabla `historial_viajes`.
     public function historialViajes()
     {
         return $this->hasMany(HistorialViaje::class, 'idUsuario');
     }
+<<<<<<< HEAD
    //METODO NUEVO
     public static function searchAndPaginate($keyword = null, $perPage = 10)
     {
@@ -82,3 +95,6 @@ class Usuario extends Model
 
 
   
+=======
+}
+>>>>>>> e01c0281269764e2d11b17e949b811dfd83f37bb

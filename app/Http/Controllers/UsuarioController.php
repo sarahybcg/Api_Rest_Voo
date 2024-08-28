@@ -64,7 +64,6 @@ class UsuarioController extends Controller
                 'telefono_' => 'required|string|max:15',
                 'fechaNacimiento' => 'required|date',
                 'clave' => 'required|string|min:6',
-                'idRol' => 'required|exists:rols,id',
             ]);
 
             // encripta la contraseña 
@@ -113,7 +112,6 @@ class UsuarioController extends Controller
                 'telefono_' => 'required|string|max:15',
                 'fechaNacimiento' => 'required|date',
                 'clave' => 'nullable|string|min:6',
-                'idRol' => 'required|exists:rols,id',
             ]);
 
             // Verifica si el nuevo CI_ ya está en uso por otro usuario

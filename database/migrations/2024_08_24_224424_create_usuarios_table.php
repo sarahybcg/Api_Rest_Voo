@@ -16,8 +16,6 @@ return new class extends Migration
             $table->string('telefono_', 20);
             $table->date('fechaNacimiento');
             $table->string('clave', 255);
-            $table->unsignedBigInteger('idRol');
-            $table->foreign('idRol')->references('id')->on('rols');
             $table->timestamps();
         });
     } 

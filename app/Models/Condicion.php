@@ -9,7 +9,7 @@ class Condicion extends Model
 {
     use HasFactory;
 
-    public $table= "condicions";
+    public $table= "Condicions";
 
     protected $fillable =[
         'condicion',
