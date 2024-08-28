@@ -22,4 +22,16 @@ class Comentario extends Model
          return $this->belongsTo(Experiencia::class, 'idExperiencia');  
      }
 
+
+     public static function searchAndPaginate($keyword = null, $perPage = 10)
+     {
+         $query = self::query()->latest('created_at');
+ 
+         if ($keyword) {
+             $query->where(function ($q) use ($keyword) {
+                 $q->where('comentario', 'like', "%{$keyword}%");
+             });
+         }
+         return $query->paginate($perPage);
+     }
 }

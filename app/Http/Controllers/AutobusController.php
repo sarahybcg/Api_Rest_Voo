@@ -5,20 +5,44 @@ namespace App\Http\Controllers;
 use App\Models\Autobus;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Http\Response;
 
 class AutobusController extends Controller
 {
-    
-    public function index()
+    public function index(Request $request)
     {
-        $autobuses = Autobus::with(['linea', 'usuario', 'modelo', 'condicion'])->get();
-
-        return response()->json([
-            'error' => false,
-            'data' => $autobuses,
-        ], 200);
-    }
+        $keyword = $request->input('search');
+        $autobuses = Autobus::searchAndPaginate($keyword, 10);
  
+        if ($autobuses->total() === 0) {
+            return response()->json([
+                'status' => Response::HTTP_NOT_FOUND,
+                'message' => 'Autobús no encontrado'
+            ], Response::HTTP_NOT_FOUND);
+        } 
+  
+        
+        return response()->json([
+            'data' => array_map(function ($autobus) {
+                return [
+                    'Placa' => $autobus->Placa_,
+                    'Linea' => $autobus->linea->nombre,
+                    'Capacidad' => $autobus->capacidad,
+                    'Modelo' => $autobus->modelo->nombre,
+                    'Marca' => $autobus->modelo->marca->nombre,
+                ];
+            }, $autobuses->items()),
+            'pagination' => [
+                'total' => $autobuses->total(),
+                'per_page' => $autobuses->perPage(),
+                'current_page' => $autobuses->currentPage(),
+                'last_page' => $autobuses->lastPage(),
+            ],
+            'message' => 'Lista de autobuses',
+            'status' => Response::HTTP_OK
+        ], Response::HTTP_OK);
+    }
+
     public function store(Request $request)
     {
         try {
@@ -53,7 +77,7 @@ class AutobusController extends Controller
         }
     }
 
-    
+
     public function show(Autobus $autobus)
     {
         $autobus->load(['linea', 'usuario', 'modelo', 'condicion']);
@@ -64,7 +88,7 @@ class AutobusController extends Controller
         ], 200);
     }
 
-    
+
     public function update(Request $request, Autobus $autobus)
     {
         try {
@@ -99,7 +123,7 @@ class AutobusController extends Controller
         }
     }
 
-    
+
     public function destroy(Autobus $autobus)
     {
         try {

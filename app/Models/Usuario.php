@@ -41,7 +41,6 @@ class Usuario extends Model
     {
         return $this->belongsTo(Notificacion::class, 'idUsuario');
     }
-
     public function experiencia()
     {
         return $this->hasMany(Experiencia::class, 'idUsuario');
@@ -63,6 +62,23 @@ class Usuario extends Model
     {
         return $this->hasMany(HistorialViaje::class, 'idUsuario');
     }
+ 
+    public static function searchAndPaginate($keyword = null, $perPage = 10)
+    {
+        $query = self::query()->latest('created_at');
 
+        if ($keyword) {
+            $query->where(function ($q) use ($keyword) {
+                $q->where('nombre', 'like', "%{$keyword}%")
+                  ->orWhere('apellido', 'like', "%{$keyword}%")
+                  ->orWhere('CI_', 'like', "%{$keyword}%");
+            });
+        }
+
+        return $query->paginate($perPage);
+    }
 }
+    
+
+
   

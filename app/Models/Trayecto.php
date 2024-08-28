@@ -34,4 +34,21 @@ class Trayecto extends Model
     {
         return $this->hasMany(HistorialViaje::class, 'idTrayecto');
     }
+
+    public static function searchAndPaginate($keyword = null, $perPage = 10)
+    {
+        $query = self::query()->latest('created_at');
+
+        if ($keyword) {
+            $query->where(function ($q) use ($keyword) {
+                $q->where('nombre_trayecto', 'like', "%{$keyword}%")
+                ->orWhere('descripcion', 'like', "%{$keyword}%")
+                ->orWhere('origen', 'like', "%{$keyword}%")
+                  ->orWhere('destino', 'like', "%{$keyword}%")
+                  ->orWhere('distancia', 'like', "%{$keyword}%");
+            });
+        }
+
+        return $query->paginate($perPage);
+    }
 }

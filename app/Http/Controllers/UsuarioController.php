@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Rol;
 use App\Models\Usuario;
 use GuzzleHttp\Psr7\Message;
 use Illuminate\Http\Request;
@@ -10,13 +11,46 @@ use Illuminate\Support\Facades\Hash;
 use function Laravel\Prompts\error;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\Response;
 
 class UsuarioController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        return Usuario::all();
+        $keyword = $request->input('search');   
+        $usuarios = Usuario::searchAndPaginate($keyword, 10);
+
+        /** Si no hay usuarios, retorna un mensaje de error */
+        if ($usuarios->total() === 0) {
+            return response()->json([
+                'status' => Response::HTTP_NOT_FOUND,
+                'message' => 'Usuario no encontrado'
+            ], Response::HTTP_NOT_FOUND);
+        }
+
+        /** Si hay usuarios, retornarlos en el formato esperado */
+        return response()->json([
+            'data' => array_map(function ($usuario) {
+                return [
+                    'CI_' => $usuario->CI_,
+                    'nombre' => $usuario->nombre,
+                    'apellido' => $usuario->apellido,
+                    'telefono_' => $usuario->telefono_,
+                    'fechaNacimiento' => $usuario->fechaNacimiento,
+                    'idRol' => $usuario->idRol
+                ];
+            }, $usuarios->items()),
+            'pagination' => [
+                'total' => $usuarios->total(),
+                'per_page' => $usuarios->perPage(),
+                'current_page' => $usuarios->currentPage(),
+                'last_page' => $usuarios->lastPage(),
+            ],
+            'message' => 'Lista de usuarios',
+            'status' => Response::HTTP_OK
+        ], Response::HTTP_OK);
     }
+
 
     public function store(Request $request)
     {
@@ -60,31 +94,12 @@ class UsuarioController extends Controller
             ], 500);
         }
     }
-    public function show( $id)
+    public function show(Usuario $usuario)
     {
-        try {
-            // Encuentra el usuario por ID o lanza una excepción si no se encuentra
-            $usuario = Usuario::findOrFail($id);
-
-            // Retorna el usuario en formato JSON
-            return response()->json([
-                'error' => false,
-                'data' => $usuario,
-            ], 200);
-        } catch (ModelNotFoundException $e) {
-            // Maneja el caso en que el usuario no se encuentra
-            return response()->json([
-                'error' => true,
-                'mensaje' => 'Usuario no encontrado',
-            ], 404);
-        } catch (\Exception $e) {
-            // Maneja cualquier otro error inesperado
-            return response()->json([
-                'error' => true,
-                'mensaje' => 'Error al obtener el usuario',
-                'exception' => $e->getMessage(),
-            ], 500);
-        }
+        return response()->json([
+            'error' => false,
+            'data' => $usuario,
+        ], 200);
     }
     public function update(Request $request, Usuario $usuario)
     {
@@ -144,9 +159,9 @@ class UsuarioController extends Controller
             ], 500);
         }
     }
-    public function destroy(Usuario $usuario)  
+    public function destroy(Usuario $usuario)
     {
-         try {
+        try {
             // Elimina el usuario
             $usuario->delete();
 

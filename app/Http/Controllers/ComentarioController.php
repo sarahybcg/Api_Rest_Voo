@@ -6,18 +6,31 @@ use App\Models\Comentario;
 use Illuminate\Http\Request;   
 use Illuminate\Validation\ValidationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-
+use Illuminate\Http\Response;
 class ComentarioController extends Controller
 { 
-    public function index()
-    {
-        $comentarios = Comentario::with('experiencia')->get();
+      
+        public function index(Request $request)
+        {
+            $keyword = $request->input('search');   
+            $comentarios = Comentario::searchAndPaginate($keyword, 10);
+     
+            if ($comentarios->total() === 0) {
+                return response()->json([
+                    'status' => Response::HTTP_NOT_FOUND,
+                    'message' => 'Comentario no encontrado'
+                ], Response::HTTP_NOT_FOUND);
+            } 
+            return response()->json([
+                'data' => array_map(function ($comentarios) {
+                    return [
+                        'comentario' => $comentarios->comentario
+                    ];
+                }, $comentarios->items()),
+                'status' => Response::HTTP_OK
+            ], Response::HTTP_OK);
+        }
 
-        return response()->json([
-            'error' => false,
-            'data' => $comentarios,
-        ], 200);
-    }
  
     public function store(Request $request)
     {

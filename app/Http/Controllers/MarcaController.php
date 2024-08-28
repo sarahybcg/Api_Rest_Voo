@@ -5,20 +5,41 @@ namespace App\Http\Controllers;
 use App\Models\Marca;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Http\Response;
 
 class MarcaController extends Controller
 {
-     
-    public function index()
+
+    public function index(Request $request)
     {
-        $marcas = Marca::all();
+        $keyword = $request->input('search');
+        $marcas = Marca::searchAndPaginate($keyword, 10);
+
+        if ($marcas->total() === 0) {
+            return response()->json([
+                'status' => Response::HTTP_NOT_FOUND,
+                'message' => 'Marca no encontrada'
+            ], Response::HTTP_NOT_FOUND);
+        }
 
         return response()->json([
-            'error' => false,
-            'data' => $marcas,
-        ], 200);
+            'data' => array_map(function ($marcas) {
+                return [
+                    'nombre_trayecto' => $marcas->nombre_trayecto
+                ];
+            }, $marcas->items()),
+            'pagination' => [
+                'total' => $marcas->total(),
+                'per_page' => $marcas->perPage(),
+                'current_page' => $marcas->currentPage(),
+                'last_page' => $marcas->lastPage(),
+            ],
+            'message' => 'Lista de marcas',
+            'status' => Response::HTTP_OK
+        ], Response::HTTP_OK);
     }
- 
+
+
     public function store(Request $request)
     {
         try {
@@ -47,7 +68,7 @@ class MarcaController extends Controller
             ], 500);
         }
     }
- 
+
     public function show(Marca $marca)
     {
         return response()->json([
@@ -55,7 +76,7 @@ class MarcaController extends Controller
             'data' => $marca,
         ], 200);
     }
- 
+
     public function update(Request $request, Marca $marca)
     {
         try {
@@ -84,7 +105,7 @@ class MarcaController extends Controller
             ], 500);
         }
     }
- 
+
     public function destroy(Marca $marca)
     {
         try {
