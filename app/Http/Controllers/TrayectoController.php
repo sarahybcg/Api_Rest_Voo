@@ -5,18 +5,44 @@ namespace App\Http\Controllers;
 use App\Models\Trayecto;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Http\Response;
 
 class TrayectoController extends Controller
 { 
-    public function index()
+    //CAMBIO EN EL INDEX
+    public function index(Request $request)
     {
-        $trayectos = Trayecto::all();
-
+        $keyword = $request->input('search');   
+        $trayectos = Trayecto::searchAndPaginate($keyword, 10);
+ 
+        if ($trayectos->total() === 0) {
+            return response()->json([
+                'status' => Response::HTTP_NOT_FOUND,
+                'message' => 'Trayecto no encontrado'
+            ], Response::HTTP_NOT_FOUND);
+        }
+ 
         return response()->json([
-            'error' => false,
-            'data' => $trayectos,
-        ], 200);
+            'data' => array_map(function ($trayectos) {
+                return [
+                    'nombre_trayecto' => $trayectos->nombre_trayecto,
+                    'descripcion' => $trayectos->descripcion,
+                    'origen' => $trayectos->origen,
+                    'destino' => $trayectos->destino,
+                    'distancia' => $trayectos->distancia
+                ];
+            }, $trayectos->items()),
+            'pagination' => [
+                'total' => $trayectos->total(),
+                'per_page' => $trayectos->perPage(),
+                'current_page' => $trayectos->currentPage(),
+                'last_page' => $trayectos->lastPage(),
+            ],
+            'message' => 'Lista de trayectos',
+            'status' => Response::HTTP_OK
+        ], Response::HTTP_OK);
     }
+
  
     public function store(Request $request)
     {

@@ -20,4 +20,9 @@ class Propietario extends Model
     {
         return $this->belongsTo(Usuario::class, 'idUsuario');
     }
+    
+    public function autobus()
+    {
+        return $this->hasMany(Autobus::class, 'idUsuario');
+    }
 }

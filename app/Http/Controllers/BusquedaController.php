@@ -5,19 +5,45 @@ namespace App\Http\Controllers;
 use App\Models\Busqueda;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Http\Response;
 
 class BusquedaController extends Controller
 {
-    
-    public function index()
+//CAMBIO EN EL INDEX
+    public function index(Request $request)
     {
-        $busquedas = Busqueda::all();
-
+        $keyword = $request->input('search');
+        $experiencias = Busqueda::searchAndPaginate($keyword, 10);
+ 
+        if ($experiencias->total() === 0) {
+            return response()->json([
+                'status' => Response::HTTP_NOT_FOUND,
+                'message' => 'Experiencia no encontrada'
+            ], Response::HTTP_NOT_FOUND);
+        }
+ 
         return response()->json([
-            'error' => false,
-            'data' => $busquedas,
-        ], 200);
+            'data' => array_map(function ($experiencia) {
+                return [
+                    'CI_' => $experiencia->usuario->CI_,
+                    'nombre' => $experiencia->usuario->nombre,
+                    'apellido' => $experiencia->usuario->apellido,
+                    'consulta' => $experiencia->consulta, 
+                    'resultado' => $experiencia->resultado, 
+                    'fechaBusqueda' => $experiencia->fechaBusqueda
+                ];
+            }, $experiencias->items()),
+            'pagination' => [
+                'total' => $experiencias->total(),
+                'per_page' => $experiencias->perPage(),
+                'current_page' => $experiencias->currentPage(),
+                'last_page' => $experiencias->lastPage(),
+            ],
+            'message' => 'Lista de experiencias',
+            'status' => Response::HTTP_OK
+        ], Response::HTTP_OK);
     }
+
  
     public function store(Request $request)
     {

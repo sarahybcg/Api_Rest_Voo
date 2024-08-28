@@ -21,4 +21,16 @@ class Marca extends Model
     {
         return $this->hasMany(Modelo::class, 'idMarca');
     }
+  //METODO NUEVO
+    public static function searchAndPaginate($keyword = null, $perPage = 10)
+    {
+        $query = self::query()->latest('created_at');
+
+        if ($keyword) {
+            $query->where(function ($q) use ($keyword) {
+                $q->where('nombre', 'like', "%{$keyword}%");
+            });
+        }
+        return $query->paginate($perPage);
+    }
 }
