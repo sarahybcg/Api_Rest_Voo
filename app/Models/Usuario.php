@@ -65,9 +65,5 @@ class Usuario extends Model
         return $this->hasOne(Linea::class, 'idUsuario_admin'); 
     }
 
-    // Relación con la tabla `historial_viajes`.
-    public function historialViajes()
-    {
-        return $this->hasMany(HistorialViaje::class, 'idUsuario');
-    }
+   
 }

@@ -24,7 +24,7 @@ class HistorialViajeController extends Controller
             $validatedData = $request->validate([
                 'idTrayecto' => 'required|exists:trayectos,id',
                 'idAutobus' => 'required|exists:autobuses,id',
-                'idUsuario' => 'required|exists:usuarios,id',
+                'idUsuario' => 'required|exists:conductores,idUsuario',
                 'tiempo_inicio' => 'required|date_format:Y-m-d H:i:s',
                 'tiempo_fin' => 'nullable|date_format:Y-m-d H:i:s|after_or_equal:tiempo_inicio',
                 'estado' => 'in:en progreso,completado,cancelado',

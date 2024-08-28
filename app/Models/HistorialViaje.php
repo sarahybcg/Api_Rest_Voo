@@ -29,9 +29,9 @@ class HistorialViaje extends Model
         return $this->belongsTo(Autobus::class, 'idAutobus');
     }
 
-    public function usuario()
+    public function conductor()
     {
-        return $this->belongsTo(Usuario::class, 'idUsuario');
+        return $this->belongsTo(Conductor::class, 'idUsuario');
     }
       
 }

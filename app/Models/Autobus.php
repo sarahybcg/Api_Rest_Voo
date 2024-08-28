@@ -27,9 +27,9 @@ class Autobus extends Model
         return $this->belongsTo(Linea::class, 'idLinea');
     }
  
-    public function usuario()
+    public function conductor()
     {
-        return $this->belongsTo(Usuario::class, 'idUsuario');
+        return $this->belongsTo(Conductor::class, 'idUsuario');
     }
  
     public function modelo()

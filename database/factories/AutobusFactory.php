@@ -16,7 +16,7 @@ class AutobusFactory extends Factory
         return [
            'Placa_' => $this->faker->unique()->word,
             'idLinea' => Linea::factory(),  
-            'idUsuario' =>  Usuario::factory(),  
+            'idUsuario' =>  Conductor::factory(),  
             'capacidad' => $this->faker->numberBetween(10, 50),
             'idModelo' =>  Modelo::factory(),  
             'idCondicion' => Condicion::factory(),
