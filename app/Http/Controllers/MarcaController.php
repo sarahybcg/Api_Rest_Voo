@@ -9,7 +9,7 @@ use Illuminate\Http\Response;
 
 class MarcaController extends Controller
 {
-
+//CAMBIO EN EL INDEX
     public function index(Request $request)
     {
         $keyword = $request->input('search');

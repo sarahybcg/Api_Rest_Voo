@@ -34,7 +34,7 @@ class Experiencia extends Model
     {
         return $this->belongsTo(Usuario::class, 'idUsuario');
     }
-
+  //METODO NUEVO
     public static function searchAndPaginate($keyword = null, $perPage = 10)
     {
         $query = self::with(['usuario', 'valoracion'])->latest('created_at');

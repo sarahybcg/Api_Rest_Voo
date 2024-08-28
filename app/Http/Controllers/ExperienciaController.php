@@ -10,6 +10,7 @@ use Illuminate\Http\Response;
 
 class ExperienciaController extends Controller
 {
+    //CAMBIO EN EL INDEX
     public function index(Request $request)
     {
         $keyword = $request->input('search');

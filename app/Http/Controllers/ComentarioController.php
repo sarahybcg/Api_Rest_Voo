@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Response;
 class ComentarioController extends Controller
 { 
-      
+      //CAMBIO EN EL INDEX
         public function index(Request $request)
         {
             $keyword = $request->input('search');   

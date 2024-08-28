@@ -22,7 +22,7 @@ class Comentario extends Model
          return $this->belongsTo(Experiencia::class, 'idExperiencia');  
      }
 
-
+  //METODO NUEVO
      public static function searchAndPaginate($keyword = null, $perPage = 10)
      {
          $query = self::query()->latest('created_at');

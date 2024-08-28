@@ -23,7 +23,7 @@ class Busqueda extends Model
     {
         return $this->belongsTo(Usuario::class, 'idUsuario');
     }
-
+  //METODO NUEVO
     public static function searchAndPaginate($keyword = null, $perPage = 10)
     {
         $query = self::with(['usuario'])->latest('created_at');

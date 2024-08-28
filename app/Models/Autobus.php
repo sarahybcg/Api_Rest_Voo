@@ -46,6 +46,7 @@ class Autobus extends Model
         return $this->hasMany(HistorialViaje::class, 'idAutobus');
     }
 
+    //METODO NUEVO
     public static function searchAndPaginate($keyword = null, $perPage = 10)
     {
         // Cargar las relaciones necesarias

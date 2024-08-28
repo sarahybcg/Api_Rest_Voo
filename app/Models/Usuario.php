@@ -62,7 +62,7 @@ class Usuario extends Model
     {
         return $this->hasMany(HistorialViaje::class, 'idUsuario');
     }
- 
+   //METODO NUEVO
     public static function searchAndPaginate($keyword = null, $perPage = 10)
     {
         $query = self::query()->latest('created_at');
