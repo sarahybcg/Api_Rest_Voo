@@ -12,12 +12,14 @@ class Linea extends Model
     public $table= "lineas";
     protected $fillable = [
         'Linea_',
-        'idUsuario',
+        'Rif_',
+        'idUsuario_admin',
+        'dir_oficinas',
     ];
 
     public function usuario()
     {
-        return $this->belongsTo(Usuario::class, 'idUsuario'); 
+        return $this->belongsTo(Usuario::class, 'idUsuario_admin'); 
     }
     public function autobuses()
     {

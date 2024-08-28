@@ -12,12 +12,12 @@ class UsuarioFactory extends Factory
     public function definition(): array
     { 
         return [
-            'CI_' => $this->faker->unique()->numerify('##########'),
-            'nombre' => $this->faker->firstName,
-            'apellido' => $this->faker->lastName,
-            'telefono_' => $this->faker->numerify('##########'), // Ajustado para 10 dígitos
-            'fechaNacimiento' => $this->faker->date(),
-            'clave' => Hash::make($this->faker->password)
+            'CI_' => '1234567890', // Puedes personalizar estos valores para la prueba
+            'nombre' => 'Juan',
+            'apellido' => 'Pérez',
+            'telefono_' => '0987654321',
+            'fechaNacimiento' => '1990-01-01',
+            'clave' => Hash::make('password123')
         ];
     }
 }

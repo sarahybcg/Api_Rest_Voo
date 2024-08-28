@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class HistorialViaje extends Model
 {
+    use HasFactory;
     public $table= "historial_viajes";
 
     protected $fillable =[

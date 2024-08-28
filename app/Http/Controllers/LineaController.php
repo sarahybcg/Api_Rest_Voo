@@ -19,12 +19,13 @@ class LineaController extends Controller
             // Valida los datos antes de guardarlos
             $validatedData = $request->validate([
                 'Linea_' => 'required|string|max:15|unique:lineas,Linea_',
-                'idUsuario' => [
+                'Rif_' => 'required|string|max:15|unique:lineas,Rif_',
+                'idUsuario_admin' => [
                     'required',
                     'exists:usuarios,id',
                     function ($attribute, $value, $fail) {
                         // Verifica si ya existe una línea con este idUsuario
-                        if (Linea::where('idUsuario', $value)->exists()) {
+                        if (Linea::where('idUsuario_admin', $value)->exists()) {
                             $fail('El usuario ya está asociado a otra línea.');
                         }
                     }
@@ -83,12 +84,13 @@ class LineaController extends Controller
             $validatedData = $request->validate([
                 
             'Linea_' => 'required|string|max:15|unique:lineas,Linea_',
-                'idUsuario' => [
+            'Rif_' => 'required|string|max:15|unique:lineas,Rif_',
+                'idUsuario_admin' => [
                     'required',
                     'exists:usuarios,id',
                     function ($attribute, $value, $fail) {
                         // Verifica si ya existe una línea con este idUsuario
-                        if (Linea::where('idUsuario', $value)->exists()) {
+                        if (Linea::where('idUsuario_admin', $value)->exists()) {
                             $fail('El usuario ya está asociado a otra línea.');
                         }
                     }

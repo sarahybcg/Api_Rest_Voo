@@ -11,9 +11,10 @@ return new class extends Migration
         Schema::create('lineas', function (Blueprint $table) {
             $table->id();
             $table->string('Linea_', 15)->unique();
-            $table->unsignedBigInteger('idUsuario');
-
-            $table->foreign('idUsuario')->references('id')->on('usuarios')->onDelete('cascade');
+            $table->string('Rif_', 15)->unique();
+            $table->unsignedBigInteger('idUsuario_admin');
+            $table->text('Dir_Oficina', 15);
+            $table->foreign('idUsuario_admin')->references('id')->on('usuarios')->onDelete('cascade');
             $table->timestamps();
         });
     }

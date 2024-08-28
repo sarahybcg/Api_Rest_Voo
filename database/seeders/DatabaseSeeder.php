@@ -28,6 +28,8 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         Usuario::factory()->count(10)->create();
-      
+        
+        
+
 }
 }

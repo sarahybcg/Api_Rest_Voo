@@ -62,7 +62,7 @@ class Usuario extends Model
     // Relación uno a uno con la tabla `lineas`.
     public function linea()
     {
-        return $this->hasOne(Linea::class, 'idUsuario'); 
+        return $this->hasOne(Linea::class, 'idUsuario_admin'); 
     }
 
     // Relación con la tabla `historial_viajes`.

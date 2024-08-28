@@ -13,7 +13,10 @@ class LineaFactory extends Factory
         
         return [
             'Linea_' => $this->faker->unique()->word,
-            'idUsuario' => Usuario::factory(),
+            'idUsuario_admin' => Usuario::factory(),
+            'Dir_Oficina' => $this->faker->word,
+
+
         ];
     }
 }
