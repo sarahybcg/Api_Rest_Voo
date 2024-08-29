@@ -30,6 +30,7 @@ class LineaController extends Controller
                         }
                     }
                 ],
+                'Dir_Oficina' => 'required|string|max:255',
             ]);
 
             $linea = Linea::create($validatedData);

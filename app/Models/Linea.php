@@ -14,7 +14,7 @@ class Linea extends Model
         'Linea_',
         'Rif_',
         'idUsuario_admin',
-        'dir_oficinas',
+        'Dir_Oficina',
     ];
 
     public function usuario()
