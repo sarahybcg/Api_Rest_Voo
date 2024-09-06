@@ -44,3 +44,4 @@ Route::apiResource('/prioridads', PrioridadController::class);
 Route::apiResource('/notificacions', NotificacionController::class);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/store', [StoreController::class, 'store']);
+Route::get('/usuarios', [UsuarioController::class, 'index']);

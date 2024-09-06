@@ -17,40 +17,55 @@ class UsuarioController extends Controller
 {
     //CAMBIO EN EL INDEX
     public function index(Request $request)
-    {
-        $keyword = $request->input('search');   
-        $usuarios = Usuario::searchAndPaginate($keyword, 10);
+{
+    // Obtener palabra clave de búsqueda, si la hay
+    $keyword = $request->input('search');
+    
+    // Iniciar la consulta
+    $query = Usuario::query();
 
-        /** Si no hay usuarios, retorna un mensaje de error */
-        if ($usuarios->total() === 0) {
-            return response()->json([
-                'status' => Response::HTTP_NOT_FOUND,
-                'message' => 'Usuario no encontrado'
-            ], Response::HTTP_NOT_FOUND);
-        }
-
-        /** Si hay usuarios, retornarlos en el formato esperado */
-        return response()->json([
-            'data' => array_map(function ($usuario) {
-                return [
-                    'CI_' => $usuario->CI_,
-                    'nombre' => $usuario->nombre,
-                    'apellido' => $usuario->apellido,
-                    'telefono_' => $usuario->telefono_,
-                    'fechaNacimiento' => $usuario->fechaNacimiento,
-                    'idRol' => $usuario->idRol
-                ];
-            }, $usuarios->items()),
-            'pagination' => [
-                'total' => $usuarios->total(),
-                'per_page' => $usuarios->perPage(),
-                'current_page' => $usuarios->currentPage(),
-                'last_page' => $usuarios->lastPage(),
-            ],
-            'message' => 'Lista de usuarios',
-            'status' => Response::HTTP_OK
-        ], Response::HTTP_OK);
+    // Aplicar filtro de búsqueda si existe
+    if ($keyword) {
+        $query->where('nombre', 'LIKE', "%{$keyword}%")
+              ->orWhere('apellido', 'LIKE', "%{$keyword}%")
+              ->orWhere('CI_', 'LIKE', "%{$keyword}%");
     }
+
+    // Cargar los usuarios junto con sus roles usando with()
+    $usuarios = $query->with('roles')->paginate(10);
+
+    /** Si no hay usuarios, retorna un mensaje de error */
+    if ($usuarios->total() === 0) {
+        return response()->json([
+            'status' => Response::HTTP_NOT_FOUND,
+            'message' => 'Usuario no encontrado'
+        ], Response::HTTP_NOT_FOUND);
+    }
+
+    /** Si hay usuarios, retornarlos en el formato esperado */
+    return response()->json([
+        'data' => $usuarios->map(function ($usuario) {
+            // Obtener el primer rol del usuario (si es que tiene)
+            $rol = $usuario->roles->first();  // Suponiendo que solo hay un rol por usuario
+            return [
+                'CI_' => $usuario->CI_,
+                'nombre' => $usuario->nombre,
+                'apellido' => $usuario->apellido,
+                'telefono_' => $usuario->telefono_,
+                'fechaNacimiento' => $usuario->fechaNacimiento,
+                'roles' => $usuario->roles->pluck('nombreRol'), // Verifica si el usuario tiene un rol
+            ];
+        }),
+        'pagination' => [
+            'total' => $usuarios->total(),
+            'per_page' => $usuarios->perPage(),
+            'current_page' => $usuarios->currentPage(),
+            'last_page' => $usuarios->lastPage(),
+        ],
+        'message' => 'Lista de usuarios',
+        'status' => Response::HTTP_OK
+    ], Response::HTTP_OK);
+}
 
 
     public function store(Request $request)
