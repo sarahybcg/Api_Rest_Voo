@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('telefono_', 20);
             $table->date('fechaNacimiento');
             $table->string('clave', 255);
+            $table->boolean('activo')->default(true);
             $table->timestamps();
         });
     } 

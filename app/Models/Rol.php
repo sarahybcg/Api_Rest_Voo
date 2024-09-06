@@ -24,6 +24,7 @@ class Rol extends Model
     public function Usuario()
     {
         return $this->belongsToMany(Usuario::class, 'rol_usuarios', 'rol_id', 'usuario_id')
-                                  ->using(RolUsuario::class);
+                                  ->using(RolUsuario::class)
+                                  ->withTimestamps();
     }
 }

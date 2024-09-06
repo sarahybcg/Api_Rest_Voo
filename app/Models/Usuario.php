@@ -20,6 +20,7 @@ class Usuario extends Model
         'telefono_',
         'fechaNacimiento',
         'clave',
+        'activo'
     ];
  
     protected $hidden = [
@@ -65,7 +66,8 @@ class Usuario extends Model
     public function roles()
     {
         return $this->belongsToMany(Rol::class, 'rol_usuarios', 'usuario_id', 'rol_id')
-                                    ->using(RolUsuario::class);
+                                    ->using(RolUsuario::class)
+                                    ->withTimestamps();
 
     }
    

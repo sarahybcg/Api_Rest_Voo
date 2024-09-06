@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Rol;
 use App\Models\Usuario;
+use App\Models\RolUsuario;
 use GuzzleHttp\Psr7\Message;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rules\Exists;
@@ -15,47 +16,58 @@ use Illuminate\Http\Response;
 
 class UsuarioController extends Controller
 {
-    //CAMBIO EN EL INDEX
     public function index(Request $request)
 {
-    // Obtener palabra clave de búsqueda, si la hay
+    // Obtener palabra clave de búsqueda y rol de búsqueda, si las hay
     $keyword = $request->input('search');
+    $roleFilter = $request->input('role'); // Filtro por rol
     
     // Iniciar la consulta
     $query = Usuario::query();
-
+    
     // Aplicar filtro de búsqueda si existe
     if ($keyword) {
-        $query->where('nombre', 'LIKE', "%{$keyword}%")
+        $query->where(function($q) use ($keyword) {
+            $q->where('nombre', 'LIKE', "%{$keyword}%")
               ->orWhere('apellido', 'LIKE', "%{$keyword}%")
               ->orWhere('CI_', 'LIKE', "%{$keyword}%");
+        });
     }
-
-    // Cargar los usuarios junto con sus roles usando with()
+    
+    // Aplicar filtro por rol si existe
+    if ($roleFilter) {
+        $query->whereHas('roles', function($q) use ($roleFilter) {
+            $q->where('nombreRol', 'LIKE', "%{$roleFilter}%");
+        });
+    }
+    
+    // Obtener usuarios con sus roles
     $usuarios = $query->with('roles')->paginate(10);
-
-    /** Si no hay usuarios, retorna un mensaje de error */
-    if ($usuarios->total() === 0) {
+    
+    // Si no hay usuarios, retorna un mensaje de error
+    if ($usuarios->isEmpty()) {
         return response()->json([
             'status' => Response::HTTP_NOT_FOUND,
             'message' => 'Usuario no encontrado'
         ], Response::HTTP_NOT_FOUND);
     }
-
-    /** Si hay usuarios, retornarlos en el formato esperado */
+    
+    // Formatear los usuarios con sus roles
+    $usuariosFormatted = $usuarios->getCollection()->map(function ($usuario) {
+        $roles = $usuario->roles->pluck('nombreRol'); // Asegúrate de que la columna 'nombreRol' exista en la tabla 'roles'
+        return [
+            'CI_' => $usuario->CI_,
+            'nombre' => $usuario->nombre,
+            'apellido' => $usuario->apellido,
+            'telefono_' => $usuario->telefono_,
+            'fechaNacimiento' => $usuario->fechaNacimiento,
+            'activo'=>$usuario->activo,
+            'roles' => $roles, // Lista de roles
+        ];
+    });
+    
     return response()->json([
-        'data' => $usuarios->map(function ($usuario) {
-            // Obtener el primer rol del usuario (si es que tiene)
-            $rol = $usuario->roles->first();  // Suponiendo que solo hay un rol por usuario
-            return [
-                'CI_' => $usuario->CI_,
-                'nombre' => $usuario->nombre,
-                'apellido' => $usuario->apellido,
-                'telefono_' => $usuario->telefono_,
-                'fechaNacimiento' => $usuario->fechaNacimiento,
-                'roles' => $usuario->roles->pluck('nombreRol'), // Verifica si el usuario tiene un rol
-            ];
-        }),
+        'data' => $usuariosFormatted,
         'pagination' => [
             'total' => $usuarios->total(),
             'per_page' => $usuarios->perPage(),
@@ -66,7 +78,7 @@ class UsuarioController extends Controller
         'status' => Response::HTTP_OK
     ], Response::HTTP_OK);
 }
-
+    
 
     public function store(Request $request)
     {
