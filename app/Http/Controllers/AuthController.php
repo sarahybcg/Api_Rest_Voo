@@ -40,7 +40,7 @@ class AuthController extends Controller
             'token' => $user->createToken('YourAppName')->plainTextToken,
             'user' => [
                 'id' => $user->id,
-                'CI' => $user->CI_,
+                'CI_' => $user->CI_,
                 'name' => $user->nombre,
                 'role' => $role->nombreRol,
             ],

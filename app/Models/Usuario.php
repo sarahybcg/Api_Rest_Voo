@@ -26,10 +26,7 @@ class Usuario extends Model
         'clave',
     ];
 
-    /**
-     * Relación muchos a muchos con la tabla `rols` a través de la tabla pivote `rol_usuario`.
-     */
-  
+ 
     // Relación con la tabla `busquedas`.
     public function busquedas()
     {
@@ -65,6 +62,11 @@ class Usuario extends Model
     {
         return $this->hasOne(Linea::class, 'idUsuario_admin'); 
     }
+    public function roles()
+    {
+        return $this->belongsToMany(Rol::class, 'rol_usuarios', 'usuario_id', 'rol_id')
+                                    ->using(RolUsuario::class);
 
+    }
    
 }
