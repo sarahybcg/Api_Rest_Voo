@@ -18,13 +18,23 @@ class UsuarioController extends Controller
 {
     public function index(Request $request)
 {
-    // Obtener palabra clave de búsqueda y rol de búsqueda, si las hay
+    // Obtener palabra clave de búsqueda, rol de búsqueda, página y tamaño de página
     $keyword = $request->input('search');
-    $roleFilter = $request->input('role'); // Filtro por rol
-    
+    $roleFilter = $request->input('role');
+    $page = $request->input('page', 1); // Valor por defecto es 1
+    $pageSize = $request->input('pageSize', 10); // Valor por defecto es 10
+
+    // Validar que pageSize sea un número positivo
+    if ($pageSize <= 0) {
+        return response()->json([
+            'status' => Response::HTTP_BAD_REQUEST,
+            'message' => 'El tamaño de la página debe ser un número positivo.'
+        ], Response::HTTP_BAD_REQUEST);
+    }
+
     // Iniciar la consulta
     $query = Usuario::query();
-    
+
     // Aplicar filtro de búsqueda si existe
     if ($keyword) {
         $query->where(function($q) use ($keyword) {
@@ -33,17 +43,17 @@ class UsuarioController extends Controller
               ->orWhere('CI_', 'LIKE', "%{$keyword}%");
         });
     }
-    
+
     // Aplicar filtro por rol si existe
     if ($roleFilter) {
         $query->whereHas('roles', function($q) use ($roleFilter) {
             $q->where('nombreRol', 'LIKE', "%{$roleFilter}%");
         });
     }
-    
+
     // Obtener usuarios con sus roles
-    $usuarios = $query->with('roles')->paginate(10);
-    
+    $usuarios = $query->with('roles')->paginate($pageSize, ['*'], 'page', $page);
+
     // Si no hay usuarios, retorna un mensaje de error
     if ($usuarios->isEmpty()) {
         return response()->json([
@@ -51,7 +61,7 @@ class UsuarioController extends Controller
             'message' => 'Usuario no encontrado'
         ], Response::HTTP_NOT_FOUND);
     }
-    
+
     // Formatear los usuarios con sus roles
     $usuariosFormatted = $usuarios->getCollection()->map(function ($usuario) {
         $roles = $usuario->roles->pluck('nombreRol'); // Asegúrate de que la columna 'nombreRol' exista en la tabla 'roles'
@@ -61,11 +71,11 @@ class UsuarioController extends Controller
             'apellido' => $usuario->apellido,
             'telefono_' => $usuario->telefono_,
             'fechaNacimiento' => $usuario->fechaNacimiento,
-            'activo'=>$usuario->activo,
+            'activo' => $usuario->activo,
             'roles' => $roles, // Lista de roles
         ];
     });
-    
+
     return response()->json([
         'data' => $usuariosFormatted,
         'pagination' => [
