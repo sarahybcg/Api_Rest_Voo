@@ -45,3 +45,4 @@ Route::apiResource('/notificacions', NotificacionController::class);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/store', [StoreController::class, 'store']);
 Route::get('/usuarios', [UsuarioController::class, 'index']);
+Route::put('/usuarios/{usuario}', [UsuarioController::class, 'update']);

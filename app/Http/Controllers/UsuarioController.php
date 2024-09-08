@@ -138,63 +138,73 @@ class UsuarioController extends Controller
             'data' => $usuario,
         ], 200);
     }
+
+
+
     public function update(Request $request, Usuario $usuario)
-    {
-        try {
-            // Valida los datos entrantes
-            $validatedData = $request->validate([
-                'CI_' => 'required|string|max:20',
-                'nombre' => 'required|string|max:255',
-                'apellido' => 'required|string|max:255',
-                'telefono_' => 'required|string|max:15',
-                'fechaNacimiento' => 'required|date',
-                'clave' => 'nullable|string|min:6',
-            ]);
+{
+    try {
+        // Valida los datos entrantes
+        $validatedData = $request->validate([
+            'CI_' => 'required|string|max:20',
+            'nombre' => 'required|string|max:255',
+            'apellido' => 'required|string|max:255',
+            'telefono_' => 'required|string|max:15',
+            'fechaNacimiento' => 'required|date',
+            'clave' => 'nullable|string|min:6',
+            'activo' => 'required|boolean', // Validación para el estado activo/inactivo
+            'idRol' => 'required|integer|exists:rols,id' // Asegura que el rol existe en la tabla rols
+        ]);
 
-            // Verifica si el nuevo CI_ ya está en uso por otro usuario
-            if (Usuario::where('CI_', $validatedData['CI_'])
-                ->where('id', '!=', $usuario->id) // Asegura que no sea el mismo usuario
-                ->exists()
-            ) {
-                return response()->json([
-                    'error' => true,
-                    'mensaje' => 'El CI_ ya está en uso por otro usuario',
-                ], 400);
-            }
-
-            // Actualiza los datos del usuario
-            $usuario->CI_ = $validatedData['CI_'];
-            $usuario->nombre = $validatedData['nombre'];
-            $usuario->apellido = $validatedData['apellido'];
-            $usuario->telefono_ = $validatedData['telefono_'];
-            $usuario->fechaNacimiento = $validatedData['fechaNacimiento'];
-
-            // Encripta la nueva contraseña si se proporciona
-            if (!empty($validatedData['clave'])) {
-                $usuario->clave = Hash::make($validatedData['clave']);
-            }
-
-            $usuario->idRol = $validatedData['idRol'];
-
-            // Guarda los cambios en la base de datos
-            if ($usuario->save()) {
-                return response()->json([
-                    'error' => false,
-                    'mensaje' => 'Usuario actualizado con éxito',
-                ], 200);
-            } else {
-                return response()->json([
-                    'error' => true,
-                    'mensaje' => 'No se pudo actualizar el usuario',
-                ], 500);
-            }
-        } catch (\Exception $e) {
+        // Verifica si el nuevo CI_ ya está en uso por otro usuario
+        if (Usuario::where('CI_', $validatedData['CI_'])
+            ->where('id', '!=', $usuario->id) // Asegura que no sea el mismo usuario
+            ->exists()
+        ) {
             return response()->json([
                 'error' => true,
-                'mensaje' => $e->getMessage(),
+                'mensaje' => 'El CI_ ya está en uso por otro usuario',
+            ], 400);
+        }
+
+        // Actualiza los datos del usuario
+        $usuario->CI_ = $validatedData['CI_'];
+        $usuario->nombre = $validatedData['nombre'];
+        $usuario->apellido = $validatedData['apellido'];
+        $usuario->telefono_ = $validatedData['telefono_'];
+        $usuario->fechaNacimiento = $validatedData['fechaNacimiento'];
+        $usuario->activo = $validatedData['activo']; // Actualiza el estado de activo/inactivo
+
+        // Encripta la nueva contraseña si se proporciona
+        if (!empty($validatedData['clave'])) {
+            $usuario->clave = Hash::make($validatedData['clave']);
+        }
+
+        // Actualiza el rol del usuario en la tabla pivote 'usuarios_rol'
+        $usuario->roles()->sync([$validatedData['idRol']]);
+
+        // Guarda los cambios en la base de datos
+        if ($usuario->save()) {
+            return response()->json([
+                'error' => false,
+                'mensaje' => 'Usuario actualizado con éxito',
+            ], 200);
+        } else {
+            return response()->json([
+                'error' => true,
+                'mensaje' => 'No se pudo actualizar el usuario',
             ], 500);
         }
+    } catch (\Exception $e) {
+        return response()->json([
+            'error' => true,
+            'mensaje' => $e->getMessage(),
+        ], 500);
     }
+}
+
+
+
     public function destroy(Usuario $usuario)
     {
         try {
