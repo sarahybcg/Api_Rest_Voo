@@ -13,6 +13,7 @@ use function Laravel\Prompts\error;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Log;
 
 class UsuarioController extends Controller
 {
@@ -141,67 +142,101 @@ class UsuarioController extends Controller
 
 
 
-    public function update(Request $request, Usuario $usuario)
-{
-    try {
-        // Valida los datos entrantes
-        $validatedData = $request->validate([
-            'CI_' => 'required|string|max:20',
-            'nombre' => 'required|string|max:255',
-            'apellido' => 'required|string|max:255',
-            'telefono_' => 'required|string|max:15',
-            'fechaNacimiento' => 'required|date',
-            'clave' => 'nullable|string|min:6',
-            'activo' => 'required|boolean', // Validación para el estado activo/inactivo
-            'idRol' => 'required|integer|exists:rols,id' // Asegura que el rol existe en la tabla rols
-        ]);
-
-        // Verifica si el nuevo CI_ ya está en uso por otro usuario
-        if (Usuario::where('CI_', $validatedData['CI_'])
-            ->where('id', '!=', $usuario->id) // Asegura que no sea el mismo usuario
-            ->exists()
-        ) {
-            return response()->json([
-                'error' => true,
-                'mensaje' => 'El CI_ ya está en uso por otro usuario',
-            ], 400);
-        }
-
-        // Actualiza los datos del usuario
-        $usuario->CI_ = $validatedData['CI_'];
-        $usuario->nombre = $validatedData['nombre'];
-        $usuario->apellido = $validatedData['apellido'];
-        $usuario->telefono_ = $validatedData['telefono_'];
-        $usuario->fechaNacimiento = $validatedData['fechaNacimiento'];
-        $usuario->activo = $validatedData['activo']; // Actualiza el estado de activo/inactivo
-
-        // Encripta la nueva contraseña si se proporciona
-        if (!empty($validatedData['clave'])) {
-            $usuario->clave = Hash::make($validatedData['clave']);
-        }
-
-        // Actualiza el rol del usuario en la tabla pivote 'usuarios_rol'
-        $usuario->roles()->sync([$validatedData['idRol']]);
-
-        // Guarda los cambios en la base de datos
-        if ($usuario->save()) {
+    public function update(Request $request, $CI_)
+    {
+        Log::info('El CI_ recibido es: ' . $CI_);
+    
+        try {
+            // Busca el usuario por CI_
+            $usuario = Usuario::where('CI_', $CI_)->first();
+    
+            if (!$usuario) {
+                return response()->json([
+                    'error' => true,
+                    'mensaje' => 'Usuario no encontrado',
+                ], 404);
+            }
+    
+            // Valida los datos entrantes
+            $validatedData = $request->validate([
+                'CI_' => 'required|string|max:20',
+                'nombre' => 'required|string|max:255',
+                'apellido' => 'required|string|max:255',
+                'telefono_' => 'required|string|max:15',
+                'fechaNacimiento' => 'required|date',
+                'clave' => 'nullable|string|min:6',
+                'activo' => 'required|boolean',
+                'roles' => 'nullable|string|max:255', // 'roles' es opcional
+            ]);
+    
+            // Verifica si el nuevo CI_ ya está en uso por otro usuario
+            if (Usuario::where('CI_', $validatedData['CI_'])
+                ->where('id', '!=', $usuario->id)
+                ->exists()
+            ) {
+                return response()->json([
+                    'error' => true,
+                    'mensaje' => 'El CI_ ya está en uso por otro usuario',
+                ], 400);
+            }
+    
+            // Actualiza los datos del usuario
+            $usuario->CI_ = $validatedData['CI_'];
+            $usuario->nombre = $validatedData['nombre'];
+            $usuario->apellido = $validatedData['apellido'];
+            $usuario->telefono_ = $validatedData['telefono_'];
+            $usuario->fechaNacimiento = $validatedData['fechaNacimiento'];
+            $usuario->activo = $validatedData['activo'];
+    
+            // Encripta la nueva contraseña si se proporciona
+            if (!empty($validatedData['clave'])) {
+                $usuario->clave = Hash::make($validatedData['clave']);
+            }
+    
+            // Si 'roles' está presente y no está vacío, sincroniza los roles
+            if (!empty($validatedData['roles'])) {
+                // Busca el rol por nombreRol
+                $rol = Rol::where('nombreRol', $validatedData['roles'])->first();
+    
+                if (!$rol) {
+                    return response()->json([
+                        'error' => true,
+                        'mensaje' => 'Rol no encontrado',
+                    ], 400);
+                }
+    
+                // Actualiza la relación en la tabla pivote con el rol encontrado
+                $usuario->roles()->sync([$rol->id]);
+            }
+    
+            // Guarda los cambios en el usuario
+            $usuario->save();
+    
             return response()->json([
                 'error' => false,
                 'mensaje' => 'Usuario actualizado con éxito',
             ], 200);
-        } else {
+    
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // Manejar errores de validación
             return response()->json([
                 'error' => true,
-                'mensaje' => 'No se pudo actualizar el usuario',
+                'mensaje' => 'Error de validación: ' . $e->getMessage(),
+                'detalles' => $e->errors(),
+            ], 422);
+    
+        } catch (\Exception $e) {
+            // Manejar cualquier otro error
+            Log::error('Error en la actualización del usuario: ' . $e->getMessage());
+    
+            return response()->json([
+                'error' => true,
+                'mensaje' => 'Error en el servidor: ' . $e->getMessage(),
             ], 500);
         }
-    } catch (\Exception $e) {
-        return response()->json([
-            'error' => true,
-            'mensaje' => $e->getMessage(),
-        ], 500);
     }
-}
+    
+
 
 
 

@@ -20,13 +20,19 @@ class AuthController extends Controller
 
         $user = User::where('CI_', $ci)->first();
 
+        // Verificar si el usuario existe y la contraseña es correcta
         if (!$user || !Hash::check($clave, $user->clave)) {
             return response()->json(['message' => 'Credenciales inválidas'], 401);
         }
 
+        // Verificar si el usuario está activo
+        if (!$user->activo) {
+            return response()->json(['message' => 'Usuario inactivo. Contacte al administrador.'], 403);
+        }
+
         // Obtener el primer rol asociado
         $role = $user->roles()->first();
-        
+
         if (!$role) {
             return response()->json(['message' => 'Rol no encontrado'], 404);
         }
