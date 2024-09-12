@@ -49,4 +49,4 @@ Route::post('/store', [StoreController::class, 'store']);
 Route::get('/usuarios', [UsuarioController::class, 'index']);
 Route::post('/app/login', [ConductorPasajeroAuthController::class, 'login']); 
 Route::post('/solicitudes', [SolicitudController::class, 'store']);
-Route::put('/solicitudes/{id}', [SolicitudController::class, 'update']);
+Route::put('/solicitudes/{id}', [SolicitudController::class, 'update']);Route::put('/usuarios/CI_}', [UsuarioController::class, 'update']);

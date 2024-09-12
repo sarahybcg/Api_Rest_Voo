@@ -12,38 +12,76 @@ class AutobusController extends Controller
 
     //CAMBIO EN EL INDEX
     public function index(Request $request)
-    {
-        $keyword = $request->input('search');
-        $autobuses = Autobus::searchAndPaginate($keyword, 10);
- 
-        if ($autobuses->total() === 0) {
-            return response()->json([
-                'status' => Response::HTTP_NOT_FOUND,
-                'message' => 'Autobús no encontrado'
-            ], Response::HTTP_NOT_FOUND);
-        } 
-  
-        
+{
+    // Obtener palabra clave de búsqueda, página y tamaño de página
+    $keyword = $request->input('search');
+    $page = $request->input('page', 1); // Valor por defecto es 1
+    $pageSize = $request->input('pageSize', 10); // Valor por defecto es 10
+
+    // Validar que pageSize sea un número positivo
+    if ($pageSize <= 0) {
         return response()->json([
-            'data' => array_map(function ($autobus) {
-                return [
-                    'Placa' => $autobus->Placa_,
-                    'Linea' => $autobus->linea->nombre,
-                    'Capacidad' => $autobus->capacidad,
-                    'Modelo' => $autobus->modelo->nombre,
-                    'Marca' => $autobus->modelo->marca->nombre,
-                ];
-            }, $autobuses->items()),
-            'pagination' => [
-                'total' => $autobuses->total(),
-                'per_page' => $autobuses->perPage(),
-                'current_page' => $autobuses->currentPage(),
-                'last_page' => $autobuses->lastPage(),
-            ],
-            'message' => 'Lista de autobuses',
-            'status' => Response::HTTP_OK
-        ], Response::HTTP_OK);
+            'status' => Response::HTTP_BAD_REQUEST,
+            'message' => 'El tamaño de la página debe ser un número positivo.'
+        ], Response::HTTP_BAD_REQUEST);
     }
+
+    // Iniciar la consulta
+    $query = Bus::query();
+
+    // Aplicar filtro de búsqueda si existe
+    if ($keyword) {
+        $query->where(function($q) use ($keyword) {
+            $q->where('placa', 'LIKE', "%{$keyword}%")
+              ->orWhereHas('linea', function($q) use ($keyword) {
+                  $q->where('nombreLinea', 'LIKE', "%{$keyword}%");
+              })
+              ->orWhereHas('propietario', function($q) use ($keyword) {
+                  $q->where('CI_', 'LIKE', "%{$keyword}%")
+                    ->orWhere('nombre', 'LIKE', "%{$keyword}%")
+                    ->orWhere('apellido', 'LIKE', "%{$keyword}%");
+              });
+        });
+    }
+
+    // Obtener autobuses con sus líneas y propietarios
+    $buses = $query->with(['linea', 'propietario'])->paginate($pageSize, ['*'], 'page', $page);
+
+    // Si no hay autobuses, retorna un mensaje de error
+    if ($buses->isEmpty()) {
+        return response()->json([
+            'status' => Response::HTTP_NOT_FOUND,
+            'message' => 'Autobús no encontrado'
+        ], Response::HTTP_NOT_FOUND);
+    }
+
+    // Formatear los autobuses con sus líneas y propietarios
+    $busesFormatted = $buses->getCollection()->map(function ($bus) {
+        return [
+            'Placa_' => $bus->placa,
+            'marca' => $bus->marca,
+            'modelo' => $bus->modelo,
+            'Linea_' => $bus->linea ? $bus->linea->nombreLinea : null, // Nombre de la línea
+            'propietario' => $bus->propietario ? [
+                'CI_' => $bus->propietario->CI_,
+                'nombre' => $bus->propietario->nombre,
+                'apellido' => $bus->propietario->apellido
+            ] : null, // Datos del propietario
+        ];
+    });
+
+    return response()->json([
+        'data' => $busesFormatted,
+        'pagination' => [
+            'total' => $buses->total(),
+            'per_page' => $buses->perPage(),
+            'current_page' => $buses->currentPage(),
+            'last_page' => $buses->lastPage(),
+        ],
+        'message' => 'Lista de autobuses',
+        'status' => Response::HTTP_OK
+    ], Response::HTTP_OK);
+}
 
     public function store(Request $request)
     {

@@ -13,6 +13,7 @@ use function Laravel\Prompts\error;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Log;
 
 class UsuarioController extends Controller
 {
@@ -140,9 +141,24 @@ class UsuarioController extends Controller
             'data' => $usuario,
         ], 200);
     }
-    public function update(Request $request, Usuario $usuario)
+
+
+
+    public function update(Request $request, $CI_)
     {
+        Log::info('El CI_ recibido es: ' . $CI_);
+    
         try {
+            // Busca el usuario por CI_
+            $usuario = Usuario::where('CI_', $CI_)->first();
+    
+            if (!$usuario) {
+                return response()->json([
+                    'error' => true,
+                    'mensaje' => 'Usuario no encontrado',
+                ], 404);
+            }
+    
             // Valida los datos entrantes
             $validatedData = $request->validate([
                 'CI_' => 'required|string|max:20',
@@ -151,11 +167,13 @@ class UsuarioController extends Controller
                 'telefono_' => 'required|string|max:15',
                 'fechaNacimiento' => 'required|date',
                 'clave' => 'nullable|string|min:6',
+                'activo' => 'required|boolean',
+                'roles' => 'nullable|string|max:255', // 'roles' es opcional
             ]);
-
+    
             // Verifica si el nuevo CI_ ya está en uso por otro usuario
             if (Usuario::where('CI_', $validatedData['CI_'])
-                ->where('id', '!=', $usuario->id) // Asegura que no sea el mismo usuario
+                ->where('id', '!=', $usuario->id)
                 ->exists()
             ) {
                 return response()->json([
@@ -163,40 +181,67 @@ class UsuarioController extends Controller
                     'mensaje' => 'El CI_ ya está en uso por otro usuario',
                 ], 400);
             }
-
+    
             // Actualiza los datos del usuario
             $usuario->CI_ = $validatedData['CI_'];
             $usuario->nombre = $validatedData['nombre'];
             $usuario->apellido = $validatedData['apellido'];
             $usuario->telefono_ = $validatedData['telefono_'];
             $usuario->fechaNacimiento = $validatedData['fechaNacimiento'];
-
+            $usuario->activo = $validatedData['activo'];
+    
             // Encripta la nueva contraseña si se proporciona
             if (!empty($validatedData['clave'])) {
                 $usuario->clave = Hash::make($validatedData['clave']);
             }
-
-            $usuario->idRol = $validatedData['idRol'];
-
-            // Guarda los cambios en la base de datos
-            if ($usuario->save()) {
-                return response()->json([
-                    'error' => false,
-                    'mensaje' => 'Usuario actualizado con éxito',
-                ], 200);
-            } else {
-                return response()->json([
-                    'error' => true,
-                    'mensaje' => 'No se pudo actualizar el usuario',
-                ], 500);
+    
+            // Si 'roles' está presente y no está vacío, sincroniza los roles
+            if (!empty($validatedData['roles'])) {
+                // Busca el rol por nombreRol
+                $rol = Rol::where('nombreRol', $validatedData['roles'])->first();
+    
+                if (!$rol) {
+                    return response()->json([
+                        'error' => true,
+                        'mensaje' => 'Rol no encontrado',
+                    ], 400);
+                }
+    
+                // Actualiza la relación en la tabla pivote con el rol encontrado
+                $usuario->roles()->sync([$rol->id]);
             }
-        } catch (\Exception $e) {
+    
+            // Guarda los cambios en el usuario
+            $usuario->save();
+    
+            return response()->json([
+                'error' => false,
+                'mensaje' => 'Usuario actualizado con éxito',
+            ], 200);
+    
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // Manejar errores de validación
             return response()->json([
                 'error' => true,
-                'mensaje' => $e->getMessage(),
+                'mensaje' => 'Error de validación: ' . $e->getMessage(),
+                'detalles' => $e->errors(),
+            ], 422);
+    
+        } catch (\Exception $e) {
+            // Manejar cualquier otro error
+            Log::error('Error en la actualización del usuario: ' . $e->getMessage());
+    
+            return response()->json([
+                'error' => true,
+                'mensaje' => 'Error en el servidor: ' . $e->getMessage(),
             ], 500);
         }
     }
+    
+
+
+
+
     public function destroy(Usuario $usuario)
     {
         try {
