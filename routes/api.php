@@ -21,7 +21,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\ValoracionController;
 use App\Models\HistorialViaje;
-use App\Http\Controllers\AuthController; // Asegúrate de importar el controlador de autenticación
+use App\Http\Controllers\AuthController;  
+use App\Http\Controllers\ConductorPasajeroAuthController;
+use App\Http\Controllers\SolicitudController;
 
 
 Route::apiResource('/usuarios', UsuarioController::class);
@@ -45,3 +47,6 @@ Route::apiResource('/notificacions', NotificacionController::class);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/store', [StoreController::class, 'store']);
 Route::get('/usuarios', [UsuarioController::class, 'index']);
+Route::post('/app/login', [ConductorPasajeroAuthController::class, 'login']); 
+Route::post('/solicitudes', [SolicitudController::class, 'store']);
+Route::put('/solicitudes/{id}', [SolicitudController::class, 'update']);

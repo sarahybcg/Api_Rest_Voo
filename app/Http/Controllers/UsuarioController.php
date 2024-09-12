@@ -63,18 +63,20 @@ class UsuarioController extends Controller
     }
 
     // Formatear los usuarios con sus roles
-    $usuariosFormatted = $usuarios->getCollection()->map(function ($usuario) {
-        $roles = $usuario->roles->pluck('nombreRol'); // Asegúrate de que la columna 'nombreRol' exista en la tabla 'roles'
-        return [
-            'CI_' => $usuario->CI_,
-            'nombre' => $usuario->nombre,
-            'apellido' => $usuario->apellido,
-            'telefono_' => $usuario->telefono_,
-            'fechaNacimiento' => $usuario->fechaNacimiento,
-            'activo' => $usuario->activo,
-            'roles' => $roles, // Lista de roles
-        ];
-    });
+   $usuariosFormatted = $usuarios->items(); // Cambiado de getCollection() a items()
+        
+        $usuariosFormatted = collect($usuariosFormatted)->map(function ($usuario) {
+            $roles = $usuario->roles->pluck('nombreRol'); // Asegúrate de que la columna 'nombreRol' exista en la tabla 'roles'
+            return [
+                'CI_' => $usuario->CI_,
+                'nombre' => $usuario->nombre,
+                'apellido' => $usuario->apellido,
+                'telefono_' => $usuario->telefono_,
+                'fechaNacimiento' => $usuario->fechaNacimiento,
+                'activo' => $usuario->activo,
+                'roles' => $roles, // Lista de roles
+            ];
+        });
 
     return response()->json([
         'data' => $usuariosFormatted,

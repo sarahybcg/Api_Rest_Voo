@@ -25,6 +25,9 @@ class Conductor extends Model
     {
         return $this->hasMany(HistorialViaje::class, 'idUsuario');
     }
-
+    public function solicitudes()
+    {
+        return $this->hasMany(Solicitud::class, 'idConductor');
+    }
 
 }

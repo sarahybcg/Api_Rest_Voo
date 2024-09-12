@@ -8,9 +8,9 @@ class AddActivoToUsuariosTable extends Migration
 {
     public function up(): void
     {
-        Schema::table('usuarios', function (Blueprint $table) {
+      /*  Schema::table('usuarios', function (Blueprint $table) {
             $table->boolean('activo')->default(true); // Agrega el nuevo campo 'activo'
-        });
+        });*/
     }
 
     public function down(): void

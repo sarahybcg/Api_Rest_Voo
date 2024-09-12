@@ -4,11 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 
-class Usuario extends Model
+class Usuario extends Authenticatable
 {
-    use HasFactory;
+    use HasApiTokens, HasFactory, Notifiable;
 
     public $table = "usuarios";
     
@@ -69,6 +72,12 @@ class Usuario extends Model
                                     ->using(RolUsuario::class)
                                     ->withTimestamps();
 
+    }
+
+    // Método para verificar si el usuario tiene un rol específico
+    public function hasRole($roleName)
+    {
+        return $this->roles->contains('nombreRol', $roleName);
     }
    
 }

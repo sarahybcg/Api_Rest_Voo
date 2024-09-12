@@ -9,6 +9,7 @@ use App\Models\Conductor;
 use App\Models\RolUsuario; // Modelo para la tabla pivot
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Log;
 
 class StoreController extends Controller
 {
@@ -20,7 +21,7 @@ class StoreController extends Controller
         $datosPrincipales = $data['datosPrincipales'] ?? [];
         $datosAdicionales = $data['datosAdicionales'] ?? [];
         $rolNombre = $datosPrincipales['role'] ?? null;
-        \Log::info('Datos recibidos:', $datosPrincipales);
+        Log::info('Datos recibidos:', $datosPrincipales);
         
 
         $response = ['message' => 'Registro completado correctamente.'];

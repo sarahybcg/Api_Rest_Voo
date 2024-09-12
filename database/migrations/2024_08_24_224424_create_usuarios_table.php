@@ -13,7 +13,7 @@ return new class extends Migration
             $table->string('CI_', 10)->unique(); 
             $table->string('nombre', 40);
             $table->string('apellido', 40);
-            $table->string('telefono_', 20);
+            $table->string('telefono_', 20)->unique();
             $table->date('fechaNacimiento');
             $table->string('clave', 255);
             $table->boolean('activo')->default(true);

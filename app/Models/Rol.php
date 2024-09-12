@@ -27,4 +27,8 @@ class Rol extends Model
                                   ->using(RolUsuario::class)
                                   ->withTimestamps();
     }
+    public function solicitudes()
+    {
+        return $this->hasMany(Solicitud::class, 'idRol');
+    }
 }

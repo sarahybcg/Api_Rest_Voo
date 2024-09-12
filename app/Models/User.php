@@ -15,7 +15,7 @@ class User extends Authenticatable
     protected $fillable = [
         'CI_',  
         'nombre',
-        'clave', // Si usas 'clave' en lugar de 'password'
+        'clave',  
     ];
 
     // Relación con roles
