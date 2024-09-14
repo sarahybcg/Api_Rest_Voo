@@ -55,3 +55,6 @@ Route::post('/enviar-solicitud', [SolicitudController::class, 'enviarSolicitud']
 Route::post('/responder-solicitud/{id}', [SolicitudController::class, 'responderSolicitud']);
 Route::get('/solicitudes-enviadas', [SolicitudController::class, 'solicitudesEnviadas']);
 Route::get('/solicitudes-recibidas', [SolicitudController::class, 'solicitudesRecibidas']);
+Route::put('/usuarios/CI_}', [UsuarioController::class, 'update']);
+Route::get('/autobuses', [AutobusController::class, 'index']);
+Route::post('/autobuses', [AutobusController::class, 'store']);
