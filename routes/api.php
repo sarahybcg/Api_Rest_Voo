@@ -49,7 +49,6 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/store', [StoreController::class, 'store']);
 Route::get('/usuarios', [UsuarioController::class, 'index']);
 Route::post('/app/login', [ConductorPasajeroAuthController::class, 'login']); 
-Route::put('/usuarios/CI_}', [UsuarioController::class, 'update']);
 Route::get('/buscar-usuario-por-telefono', [SolicitudController::class, 'buscarUsuarioPorTelefono']);
 Route::post('/enviar-solicitud', [SolicitudController::class, 'enviarSolicitud']);
 Route::post('/responder-solicitud/{id}', [SolicitudController::class, 'responderSolicitud']);
