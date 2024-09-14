@@ -9,16 +9,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('solicituds', function (Blueprint $table) {
-        $table->id();
-        $table->unsignedBigInteger('idConductor');
-        $table->unsignedBigInteger('idPropietario'); // Añadido
-        $table->unsignedBigInteger('idRol');
-        $table->enum('estado', ['pendiente', 'aprobado', 'rechazado'])->default('pendiente');
-        $table->timestamps();
-
-        $table->foreign('idConductor')->references('id')->on('conductors')->onDelete('cascade');
-        $table->foreign('idPropietario')->references('id')->on('usuarios')->onDelete('cascade');  
-        $table->foreign('idRol')->references('id')->on('rols')->onDelete('cascade');
+            $table->id();
+            $table->foreignId('solicitante_id')  
+                ->constrained('usuarios')
+                ->onDelete('cascade');
+            $table->foreignId('receptor_id')  
+                ->constrained('usuarios')
+                ->onDelete('cascade');
+            $table->enum('estado', ['pendiente', 'aceptada', 'rechazada'])->default('pendiente');  
+            $table->timestamps();
         });
     }
 

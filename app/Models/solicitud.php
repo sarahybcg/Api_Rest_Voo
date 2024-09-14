@@ -10,20 +10,26 @@ class solicitud extends Model
     use HasFactory;
     
     protected $table = 'solicituds';
-
+ 
     protected $fillable = [
-        'idConductor',
-        'idRol',
+        'solicitante_id',
+        'receptor_id',
         'estado',
+    ]; 
+    
+    const ESTADOS = [
+        'PENDIENTE' => 'pendiente',
+        'ACEPTADA' => 'aceptada',
+        'RECHAZADA' => 'rechazada',
     ];
  
-    public function conductor()
+    public function solicitante()
     {
-        return $this->belongsTo(Conductor::class, 'idConductor');
+        return $this->belongsTo(Usuario::class, 'solicitante_id');
     }
-
-    public function rol()
+ 
+    public function receptor()
     {
-        return $this->belongsTo(Rol::class, 'idRol');
+        return $this->belongsTo(Usuario::class, 'receptor_id');
     }
 }
