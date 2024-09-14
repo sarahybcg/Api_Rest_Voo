@@ -18,6 +18,7 @@ class Autobus extends Model
         'capacidad',
         'idModelo',
         'idCondicion',
+        'autobusesanio'
     ];
 
 
@@ -28,7 +29,7 @@ class Autobus extends Model
  
     public function propietario()
     {
-        return $this->belongsTo(propietario::class, 'idUsuario');
+        return $this->belongsTo(Usuario::class, 'idUsuario');
     }
 
     public function modelo()

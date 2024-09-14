@@ -49,10 +49,10 @@ class Usuario extends Authenticatable
         return $this->hasMany(Experiencia::class, 'idUsuario');
     }
 
-    // Relación uno a uno con la tabla `propietarios`.
-    public function propietario()
+
+    public function autobus()
     {
-        return $this->hasOne(Propietario::class, 'idUsuario');
+        return $this->hasMany(Autobus::class, 'idUsuario');
     }
 
     // Relación uno a uno con la tabla `conductors`.
