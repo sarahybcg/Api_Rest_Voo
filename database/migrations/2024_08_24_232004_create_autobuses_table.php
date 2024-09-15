@@ -12,17 +12,20 @@ return new class extends Migration
             $table->id();
             $table->string('Placa_', 15)->unique();
             $table->unsignedBigInteger('idLinea');
-            $table->unsignedBigInteger('idUsuario');
+            $table->string('idUsuario', 10);  
             $table->integer('capacidad');
             $table->unsignedBigInteger('idModelo');
             $table->unsignedBigInteger('idCondicion');
+            $table->year('autobusesanio')->nullable();   
 
-            $table->foreign('idLinea')->references('id')->on('lineas')->onDelete('cascade');
-            $table->foreign('idUsuario')->references('id')->on('usuarios')->onDelete('cascade');
+            // Definición de las llaves foráneas
+            $table->foreign('idLinea')->references('id')->on('lineas')->onDelete('cascade'); 
+            $table->foreign('idUsuario')->references('CI_')->on('usuarios')->onDelete('cascade')->onUpdate('cascade'); 
             $table->foreign('idModelo')->references('id')->on('modelos')->onDelete('cascade');
             $table->foreign('idCondicion')->references('id')->on('condicions');
-            
+
             $table->timestamps(); 
+              
         });
     } 
     public function down(): void

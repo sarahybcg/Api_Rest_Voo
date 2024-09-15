@@ -58,16 +58,15 @@ public function enviarSolicitud(Request $request)
 }
 
 public function responderSolicitud(Request $request, $id)
-{
-    // Validar el estado de la solicitud
+{ 
     $request->validate([
         'estado' => 'required|in:aceptada,rechazada',
+        'receptor_id' => 'required|integer|exists:usuarios,id',
     ]);
-
-    // Encontrar la solicitud
+ 
     $solicitud = Solicitud::findOrFail($id);
 
-    // Verificar que el receptor de la solicitud es el que está tratando de actualizarla
+     
     if ($solicitud->receptor_id !== $request->input('receptor_id')) {
         return response()->json(['message' => 'No tienes permiso para modificar esta solicitud.'], 403);
     }
@@ -77,8 +76,42 @@ public function responderSolicitud(Request $request, $id)
         'estado' => $request->estado,
     ]);
 
+    if ($request->estado === 'aceptada') {
+        // Obtener la información del conductor que está aceptando la solicitud
+        $conductor = Usuario::find($solicitud->receptor_id)->conductor;
+
+        if ($conductor) { 
+
+            $autobus = $conductor->usuario->autobus->first();
+             
+            $linea = $autobus ? $autobus->linea : null;
+ 
+            $trayecto = $linea ? $linea->trayectos->first() : null;
+ 
+            return response()->json([
+                'message' => 'Solicitud aceptada con éxito.',
+                'autobus' => $autobus ? [
+                    'Placa_' => $autobus->Placa_,
+                    'capacidad' => $autobus->capacidad,
+                    'modelo' => $autobus->modelo ? $autobus->modelo->nombre : 'Modelo no disponible',
+                    'marca' => $autobus->modelo && $autobus->modelo->marca ? $autobus->modelo->marca->nombre : 'Marca no disponible',
+                ] : 'Autobús no disponible',
+                'linea' => $linea ? [
+                    'nombreLinea' => $linea->Linea_,
+                ] : 'Línea no disponible',
+                'trayecto' => $trayecto ? [
+                    'nombre_trayecto' => $trayecto->nombre_trayecto,
+                    'origen' => $trayecto->origen,
+                    'destino' => $trayecto->destino,
+                    'distancia' => $trayecto->distancia,
+                ] : 'Trayecto no disponible',
+            ], 200);
+        }
+    }
+
     return response()->json(['message' => 'Solicitud actualizada con éxito.'], 200);
 }
+
 
 public function solicitudesEnviadas(Request $request)
 {
