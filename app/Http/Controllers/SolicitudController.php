@@ -1,76 +1,135 @@
 <?php
-
+ 
 namespace App\Http\Controllers;
 
-use App\Models\solicitud;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
+use App\Models\Solicitud;
 use App\Models\Usuario;
-use App\Models\Rol;
-use App\Models\Conductor;
 
 class SolicitudController extends Controller
-{  
-   
-    
-    public function store(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'telefonoPropietario' => 'required|numeric',
-            'idRol' => 'required|exists:rols,id',
-        ]);
+{
+    public function buscarUsuarioPorTelefono(Request $request)
+{
+    $request->validate([
+        'telefono' => 'required|exists:usuarios,telefono_',
+    ]);
 
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
-        }
+    $usuario = Usuario::where('telefono_', $request->telefono)->first();
 
-        // Encuentra al propietario por número de teléfono
-        $propietario = Usuario::where('telefono_', $request->telefonoPropietario)
-            ->whereHas('roles', function ($query) {
-                $query->where('nombreRol', 'Propietario'); // Asumiendo que el rol se llama 'Propietario'
-            })
-            ->first();
-
-        if (!$propietario) {
-            return response()->json(['message' => 'Propietario no encontrado.'], 404);
-        }
-
-        $conductor = Conductor::where('idUsuario', $request->user()->id)->first();
-
-        if (!$conductor) {
-            return response()->json(['message' => 'Conductor no encontrado.'], 404);
-        }
-
-        // Crear la solicitud
-        $solicitud = Solicitud::create([
-            'idConductor' => $conductor->id,
-            'idPropietario' => $propietario->id,
-            'idRol' => $request->idRol,
-            'estado' => 'pendiente',
-        ]);
-
-        return response()->json(['message' => 'Solicitud enviada correctamente.', 'solicitud' => $solicitud], 201);
+    if ($usuario) {
+        return response()->json([
+            'message' => 'Usuario encontrado.',
+            'data' => [
+                'nombre' => $usuario->nombre,
+                'apellido' => $usuario->apellido,
+                'telefono' => $usuario->telefono_,
+            ]
+        ], 200);
     }
 
-    public function update(Request $request, $id)
-    {
-        $solicitud = Solicitud::find($id);
+    return response()->json(['message' => 'Usuario no encontrado.'], 404);
+}
 
-        if (!$solicitud) {
-            return response()->json(['message' => 'Solicitud no encontrada.'], 404);
-        }
 
-        $validator = Validator::make($request->all(), [
-            'estado' => 'required|in:aprobado,rechazado',
+public function enviarSolicitud(Request $request)
+{ 
+    $request->validate([
+        'solicitante_id' => 'required|integer|exists:usuarios,id',
+        'telefono' => 'required|exists:usuarios,telefono_',
+    ]);
+
+     
+    $receptor = Usuario::where('telefono_', $request->telefono)->first();
+
+    if ($receptor) {
+         
+        Solicitud::create([
+            'solicitante_id' => $request->input('solicitante_id'),  
+            'receptor_id' => $receptor->id,
+            'estado' => 'PENDIENTE',  
         ]);
 
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
-        }
+        return response()->json(['message' => 'Solicitud enviada con éxito.'], 200);
+    }
 
-        $solicitud->estado = $request->estado;
-        $solicitud->save();
+    return response()->json(['message' => 'Usuario no encontrado.'], 404);
+}
 
-        return response()->json(['message' => 'Estado de la solicitud actualizado correctamente.', 'solicitud' => $solicitud], 200);
-    } 
+public function responderSolicitud(Request $request, $id)
+{
+    // Validar el estado de la solicitud
+    $request->validate([
+        'estado' => 'required|in:aceptada,rechazada',
+    ]);
+
+    // Encontrar la solicitud
+    $solicitud = Solicitud::findOrFail($id);
+
+    // Verificar que el receptor de la solicitud es el que está tratando de actualizarla
+    if ($solicitud->receptor_id !== $request->input('receptor_id')) {
+        return response()->json(['message' => 'No tienes permiso para modificar esta solicitud.'], 403);
+    }
+
+    // Actualizar el estado de la solicitud
+    $solicitud->update([
+        'estado' => $request->estado,
+    ]);
+
+    return response()->json(['message' => 'Solicitud actualizada con éxito.'], 200);
+}
+
+public function solicitudesEnviadas(Request $request)
+{
+    $solicitante_id = $request->input('solicitante_id');
+ 
+    $solicitudes = Solicitud::where('solicitante_id', $solicitante_id)->get();
+ 
+    $solicitudesConDetalles = $solicitudes->map(function ($solicitud) use ($solicitante_id) {
+        $receptor = Usuario::find($solicitud->receptor_id);
+
+        return [
+            'id' => $solicitud->id,
+            'estado' => $solicitud->estado,
+            'created_at' => $solicitud->created_at,
+            'updated_at' => $solicitud->updated_at,
+            'receptor' => [
+                'nombre' => $receptor->nombre,
+                'apellido' => $receptor->apellido,
+                'telefono' => $receptor->telefono_,
+            ],
+        ];
+    });
+
+    return response()->json($solicitudesConDetalles, 200);
+}
+
+
+
+public function solicitudesRecibidas(Request $request)
+{
+    $receptor_id = $request->input('receptor_id');
+
+    $solicitudes = Solicitud::where('receptor_id', $receptor_id)->get();
+ 
+    $solicitudesConDetalles = $solicitudes->map(function ($solicitud) use ($receptor_id) {
+        $solicitante = Usuario::find($solicitud->solicitante_id);
+
+        return [
+            'id' => $solicitud->id,
+            'estado' => $solicitud->estado,
+            'created_at' => $solicitud->created_at,
+            'updated_at' => $solicitud->updated_at,
+            'solicitante' => [
+                'nombre' => $solicitante->nombre,
+                'apellido' => $solicitante->apellido,
+                'telefono' => $solicitante->telefono_,
+            ],
+        ];
+    });
+
+    return response()->json($solicitudesConDetalles, 200);
+}
+
 }

@@ -24,6 +24,7 @@ use App\Models\HistorialViaje;
 use App\Http\Controllers\AuthController;  
 use App\Http\Controllers\ConductorPasajeroAuthController;
 use App\Http\Controllers\SolicitudController;
+use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
 
 
 Route::apiResource('/usuarios', UsuarioController::class);
@@ -48,9 +49,12 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/store', [StoreController::class, 'store']);
 Route::get('/usuarios', [UsuarioController::class, 'index']);
 Route::post('/app/login', [ConductorPasajeroAuthController::class, 'login']); 
-Route::post('/solicitudes', [SolicitudController::class, 'store']);
-Route::put('/solicitudes/{id}', [SolicitudController::class, 'update']);
+Route::get('/buscar-usuario-por-telefono', [SolicitudController::class, 'buscarUsuarioPorTelefono']);
+Route::post('/enviar-solicitud', [SolicitudController::class, 'enviarSolicitud']);
+Route::post('/responder-solicitud/{id}', [SolicitudController::class, 'responderSolicitud']);
+Route::get('/solicitudes-enviadas', [SolicitudController::class, 'solicitudesEnviadas']);
+Route::get('/solicitudes-recibidas', [SolicitudController::class, 'solicitudesRecibidas']);
 Route::put('/usuarios/{CI_}', [UsuarioController::class, 'update']);
 Route::get('/autobuses', [AutobusController::class, 'index']);
 Route::post('/autobuses', [AutobusController::class, 'store']);
-Route::put('/autobuses/{Placa_}', [AutobusController::class, 'update']);
+Route::put('/autobuses/{Placa_}', [AutobusController::class, 'store']);

@@ -73,11 +73,14 @@ class Usuario extends Authenticatable
                                     ->withTimestamps();
 
     }
-
-    // Método para verificar si el usuario tiene un rol específico
-    public function hasRole($roleName)
+    public function solicitudesEnviadas()
     {
-        return $this->roles->contains('nombreRol', $roleName);
+        return $this->hasMany(Solicitud::class, 'solicitante_id');
+    }
+ 
+    public function solicitudesRecibidas()
+    {
+        return $this->hasMany(Solicitud::class, 'receptor_id');
     }
    
 }
