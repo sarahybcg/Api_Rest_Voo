@@ -40,7 +40,7 @@ class AutobusController extends Controller
         $query->where(function($q) use ($keyword) {
             $q->where('Placa_', 'LIKE', "%{$keyword}%")
               ->orWhereHas('linea', function($q) use ($keyword) {
-                  $q->where('nombreLinea', 'LIKE', "%{$keyword}%");
+                  $q->where('Linea_', 'LIKE', "%{$keyword}%");
               })
               ->orWhereHas('propietario', function($q) use ($keyword) {
                   $q->where('CI_', 'LIKE', "%{$keyword}%")
@@ -186,39 +186,113 @@ public function store(Request $request)
 }
 
 
-    public function update(Request $request, Autobus $autobus)
-    {
-        try {
-            $validatedData = $request->validate([
-                'Placa_' => 'required|string|max:15|unique:autobuses,Placa_,' . $autobus->id,
-                'idLinea' => 'required|exists:lineas,id',
-                'idUsuario' => 'required|exists:usuarios,id',
-                'capacidad' => 'required|integer',
-                'idModelo' => 'required|exists:modelos,id',
-                'idCondicion' => 'required|exists:condicions,id',
-            ]);
+public function update(Request $request, $Placa_)
+{
+    try {
+        // Registrar los datos recibidos para depuración
+        \Log::info('Datos recibidos en la solicitud para actualizar autobús:', $request->all());
 
-            $autobus->update($validatedData);
+        // Extraer el objeto datosAutobus de la solicitud
+        $datosAutobus = $request->input('datosAutobus');
 
-            return response()->json([
-                'error' => false,
-                'mensaje' => 'Autobús actualizado con éxito',
-                'data' => $autobus,
-            ], 200);
-        } catch (ValidationException $e) {
+        // Validar los datos entrantes
+        $validatedData = \Validator::make($datosAutobus, [
+            'PLaca_' => 'required|string|max:20',
+            'marca' => 'required|string',
+            'modelo' => 'required|string',
+            'Linea_' => 'required|string',
+            'propietario_CI_' => 'required|string|exists:usuarios,CI_',
+            'capacidad' => 'required|integer',
+            'autobusesanio' => 'required|integer|min:1900|max:' . (date('Y') + 1),
+            'condicion' => 'required|string|in:activo,inactivo,reparacion',
+        ])->validate();
+
+        // Buscar el autobús por la placa
+        $autobus = Autobus::where('Placa_', $Placa_)->first();
+        if (!$autobus) {
             return response()->json([
                 'error' => true,
-                'mensaje' => 'Datos de entrada no válidos',
-                'errors' => $e->errors(),
-            ], 422);
-        } catch (\Exception $e) {
-            return response()->json([
-                'error' => true,
-                'mensaje' => 'Error al actualizar el autobús',
-                'exception' => $e->getMessage(),
-            ], 500);
+                'mensaje' => 'Autobús no encontrado',
+            ], 404);
         }
+
+        // Buscar la línea por nombre
+        $linea = Linea::where('Linea_', $validatedData['Linea_'])->first();
+        if (!$linea) {
+            return response()->json([
+                'error' => true,
+                'mensaje' => 'Línea no encontrada',
+            ], 404);
+        }
+
+        // Buscar el propietario por su CI_
+        $propietario = Usuario::where('CI_', $validatedData['propietario_CI_'])->first();
+        if (!$propietario) {
+            return response()->json([
+                'error' => true,
+                'mensaje' => 'Propietario no encontrado',
+            ], 404);
+        }
+
+        // Buscar o crear la marca
+        $marca = Marca::firstOrCreate(['nombre' => $validatedData['marca']]);
+
+        // Buscar o crear el modelo relacionado a la marca
+        $modelo = Modelo::firstOrCreate([
+            'nombre' => $validatedData['modelo'],
+            'idMarca' => $marca->id,
+        ]);
+
+        // Buscar la condición en la tabla condicions
+        $condicion = Condicion::where('condicion', $validatedData['condicion'])->firstOrFail();
+
+        // Actualizar los datos del autobús
+        $autobus->update([
+            'idLinea' => $linea->id,
+            'idUsuario' => $propietario->id,
+            'capacidad' => $validatedData['capacidad'],
+            'idModelo' => $modelo->id,
+            'autobusesanio' => $validatedData['autobusesanio'],
+            'idCondicion' => $condicion->id, // Guardar el id de la condición
+        ]);
+
+        // Respuesta de éxito
+        return response()->json([
+            'error' => false,
+            'mensaje' => 'Autobús actualizado con éxito',
+            'data' => $autobus,
+        ], 200);
+
+    } catch (\Illuminate\Database\QueryException $e) {
+        // Manejo específico para errores de la base de datos como clave única
+        if ($e->getCode() === '23000') {
+            return response()->json([
+                'error' => true,
+                'mensaje' => 'La placa ya está en uso por otro autobús',
+            ], 409);
+        }
+        // Manejo general de errores de la base de datos
+        return response()->json([
+            'error' => true,
+            'mensaje' => 'Error al actualizar el autobús',
+            'exception' => $e->getMessage(),
+        ], 500);
+    } catch (ValidationException $e) {
+        // Respuesta de error de validación
+        return response()->json([
+            'error' => true,
+            'mensaje' => 'Datos de entrada no válidos',
+            'errors' => $e->errors(),
+        ], 422);
+    } catch (\Exception $e) {
+        // Respuesta de error general
+        return response()->json([
+            'error' => true,
+            'mensaje' => 'Error al actualizar el autobús',
+            'exception' => $e->getMessage(),
+        ], 500);
     }
+}
 
 
     public function destroy(Autobus $autobus)
