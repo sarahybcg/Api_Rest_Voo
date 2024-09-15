@@ -15,6 +15,7 @@ return new class extends Migration
             $table->string('origen',255);
             $table->string('destino',255);
             $table->decimal('distancia', 10, 2)->nullable();
+            $table->json('coordenadas')->nullable(); 
             $table->timestamps();
         });
     } 

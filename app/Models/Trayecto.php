@@ -17,8 +17,12 @@ class Trayecto extends Model
         'origen',
         'destino',
         'distancia',
+        'coordenadas',  
     ];
 
+    protected $casts = [
+        'coordenadas' => 'array', // convierte el campo tipo JSON en un array
+    ];
 
     public function lineas()
     {
