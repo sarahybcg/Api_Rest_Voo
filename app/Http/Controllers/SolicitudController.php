@@ -58,15 +58,14 @@ public function enviarSolicitud(Request $request)
 }
 
 public function responderSolicitud(Request $request, $id)
-{ 
+{
     $request->validate([
         'estado' => 'required|in:aceptada,rechazada',
         'receptor_id' => 'required|integer|exists:usuarios,id',
     ]);
- 
+
     $solicitud = Solicitud::findOrFail($id);
 
-     
     if ($solicitud->receptor_id !== $request->input('receptor_id')) {
         return response()->json(['message' => 'No tienes permiso para modificar esta solicitud.'], 403);
     }
@@ -80,14 +79,11 @@ public function responderSolicitud(Request $request, $id)
         // Obtener la información del conductor que está aceptando la solicitud
         $conductor = Usuario::find($solicitud->receptor_id)->conductor;
 
-        if ($conductor) { 
-
+        if ($conductor) {
             $autobus = $conductor->usuario->autobus->first();
-             
             $linea = $autobus ? $autobus->linea : null;
- 
             $trayecto = $linea ? $linea->trayectos->first() : null;
- 
+
             return response()->json([
                 'message' => 'Solicitud aceptada con éxito.',
                 'autobus' => $autobus ? [
@@ -104,6 +100,7 @@ public function responderSolicitud(Request $request, $id)
                     'origen' => $trayecto->origen,
                     'destino' => $trayecto->destino,
                     'distancia' => $trayecto->distancia,
+                    'coordenadas' => $trayecto->coordenadas,  
                 ] : 'Trayecto no disponible',
             ], 200);
         }
