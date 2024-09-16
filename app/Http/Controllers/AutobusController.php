@@ -18,70 +18,71 @@ class AutobusController extends Controller
 
     //CAMBIO EN EL INDEX
     public function index(Request $request)
-{
-    // Obtener palabra clave de búsqueda, página y tamaño de página
-    $keyword = $request->input('search');
-    $page = $request->input('page', 1);
-    $pageSize = $request->input('pageSize', 10);
-
-    // Validar que pageSize sea un número positivo
-    if ($pageSize <= 0) {
-        return response()->json([
-            'status' => Response::HTTP_BAD_REQUEST,
-            'message' => 'El tamaño de la página debe ser un número positivo.'
-        ], Response::HTTP_BAD_REQUEST);
-    }
-
-    // Iniciar la consulta
-    $query = Autobus::query();
-
-    // Aplicar filtro de búsqueda si existe
-    if ($keyword) {
-        $query->where(function($q) use ($keyword) {
-            $q->where('Placa_', 'LIKE', "%{$keyword}%")
-              ->orWhereHas('linea', function($q) use ($keyword) {
-                  $q->where('Linea_', 'LIKE', "%{$keyword}%");
-              })
-              ->orWhereHas('propietario', function($q) use ($keyword) {
-                  $q->where('CI_', 'LIKE', "%{$keyword}%")
-                    ->orWhere('nombre', 'LIKE', "%{$keyword}%")
-                    ->orWhere('apellido', 'LIKE', "%{$keyword}%");
-              });
+    {
+        // Obtener palabra clave de búsqueda, página y tamaño de página
+        $keyword = $request->input('search');
+        $page = $request->input('page', 1);
+        $pageSize = $request->input('pageSize', 10);
+    
+        // Validar que pageSize sea un número positivo
+        if ($pageSize <= 0) {
+            return response()->json([
+                'status' => Response::HTTP_BAD_REQUEST,
+                'message' => 'El tamaño de la página debe ser un número positivo.'
+            ], Response::HTTP_BAD_REQUEST);
+        }
+    
+        // Iniciar la consulta
+        $query = Autobus::query();
+    
+        // Aplicar filtro de búsqueda si existe
+        if ($keyword) {
+            $query->where(function($q) use ($keyword) {
+                $q->where('Placa_', 'LIKE', "%{$keyword}%")
+                  ->orWhereHas('linea', function($q) use ($keyword) {
+                      $q->where('Linea_', 'LIKE', "%{$keyword}%");
+                  })
+                  ->orWhereHas('propietario', function($q) use ($keyword) {
+                      $q->where('CI_', 'LIKE', "%{$keyword}%")
+                        ->orWhere('nombre', 'LIKE', "%{$keyword}%")
+                        ->orWhere('apellido', 'LIKE', "%{$keyword}%");
+                  });
+            });
+        }
+    
+        // Obtener autobuses con sus relaciones (incluyendo la condición)
+        $buses = $query->with(['linea', 'propietario', 'modelo.marca', 'condicion'])->paginate($pageSize, ['*'], 'page', $page);
+    
+        // Formatear los autobuses
+        $busesFormatted = $buses->getCollection()->map(function ($bus) {
+            return [
+                'Placa_' => $bus->Placa_,
+                'marca' => $bus->modelo && $bus->modelo->marca ? $bus->modelo->marca->nombre : 'Marca no disponible',
+                'modelo' => $bus->modelo ? $bus->modelo->nombre : 'Modelo no disponible',
+                'Linea_' => $bus->linea ? $bus->linea->Linea_ : 'Línea no disponible',
+                'propietario' => $bus->propietario ? [
+                    'CI_' => $bus->propietario->CI_,
+                    'nombre' => $bus->propietario->nombre,
+                    'apellido' => $bus->propietario->apellido
+                ] : null,
+                'capacidad' => $bus->capacidad,
+                'anio' => $bus->autobusesanio,
+                'condicion' => $bus->condicion ? $bus->condicion->condicion : 'Condición no disponible',
+            ];
         });
+    
+        return response()->json([
+            'data' => $busesFormatted,
+            'pagination' => [
+                'total' => $buses->total(),
+                'per_page' => $buses->perPage(),
+                'current_page' => $buses->currentPage(),
+                'last_page' => $buses->lastPage(),
+            ],
+            'message' => 'Lista de autobuses',
+            'status' => Response::HTTP_OK
+        ], Response::HTTP_OK);
     }
-
-    // Obtener autobuses con sus relaciones
-    $buses = $query->with(['linea', 'propietario', 'modelo.marca'])->paginate($pageSize, ['*'], 'page', $page);
-
-    // Formatear los autobuses
-    $busesFormatted = $buses->getCollection()->map(function ($bus) {
-        return [
-            'Placa_' => $bus->Placa_,
-            'marca' => $bus->modelo && $bus->modelo->marca ? $bus->modelo->marca->nombre : 'Marca no disponible',
-            'modelo' => $bus->modelo ? $bus->modelo->nombre : 'Modelo no disponible',
-            'Linea_' => $bus->linea ? $bus->linea->Linea_ : 'Línea no disponible',
-            'propietario' => $bus->propietario ? [
-                'CI_' => $bus->propietario->CI_,
-                'nombre' => $bus->propietario->nombre,
-                'apellido' => $bus->propietario->apellido
-            ] : null,
-            'capacidad' => $bus->capacidad,
-            'anio' => $bus->autobusesanio,
-        ];
-    });
-
-    return response()->json([
-        'data' => $busesFormatted,
-        'pagination' => [
-            'total' => $buses->total(),
-            'per_page' => $buses->perPage(),
-            'current_page' => $buses->currentPage(),
-            'last_page' => $buses->lastPage(),
-        ],
-        'message' => 'Lista de autobuses',
-        'status' => Response::HTTP_OK
-    ], Response::HTTP_OK);
-}
 
 
 
@@ -197,7 +198,7 @@ public function update(Request $request, $Placa_)
 
         // Validar los datos entrantes
         $validatedData = \Validator::make($datosAutobus, [
-            'PLaca_' => 'required|string|max:20',
+            'Placa_' => 'required|string|max:20',
             'marca' => 'required|string',
             'modelo' => 'required|string',
             'Linea_' => 'required|string',
@@ -248,6 +249,7 @@ public function update(Request $request, $Placa_)
 
         // Actualizar los datos del autobús
         $autobus->update([
+            'Placa_' => $validatedData['Placa_'],
             'idLinea' => $linea->id,
             'idUsuario' => $propietario->id,
             'capacidad' => $validatedData['capacidad'],
